@@ -1,0 +1,171 @@
+{
+  "Format": "BEJSON",
+  "Format_Version": "104a",
+  "Format_Creator": "Elton Boehnen",
+  "Project_Name": "Experimental CMS",
+  "Project_Modified_Date": "2026-07-21T04:33:57Z",
+  "Project_Description": "Sandbox CMS isolated from BEJSON CMS production via Lib_EXPCMS library boundary.",
+  "Schema_Version": "1.0.1",
+  "current_version": "3.5.0",
+  "current_package_version": "18",
+  "Records_Type": [
+    "RootPackage"
+  ],
+  "Fields": [
+    {
+      "name": "change_log",
+      "type": "string"
+    },
+    {
+      "name": "date_changed",
+      "type": "string"
+    },
+    {
+      "name": "change_notes",
+      "type": "string"
+    },
+    {
+      "name": "current_version",
+      "type": "string"
+    },
+    {
+      "name": "current_package_version",
+      "type": "string"
+    }
+  ],
+  "Values": [
+    [
+      "Library isolation sync: re-synced Lib_EXPCMS per ExpCMS_Library_Rules_Report.md against authoritative BEJSON_CMS.zip. Reverted incorrect family-prefixed Core naming from prior turn.",
+      "2026-07-05T17:49:12Z",
+      "20 Core files verbatim, 7 CMS-family renamed to lib_expcms_*, 8 HTML3 verbatim, chunker wrapper renamed. Import resolution verified clean.",
+      "3.0.4",
+      "1"
+    ],
+    [
+      "Unused library purge: 20 genuinely orphaned files deleted from Lib_EXPCMS after transitive import-graph audit from both entry points.",
+      "2026-07-06T22:01:46Z",
+      "Held back 12 frozen Core baseline files + 6 CMS engine files pending confirmation (unused locally but architecturally mandated / likely wiring gap, not dead code).",
+      "3.0.5",
+      "2"
+    ],
+    [
+      "Re-sync against current production (pkg37): Core + CMS-family layers rebuilt from BEJSON_CMS_v18_5_pkg37.zip after detecting the prior source was a stale pre-pkg30 snapshot.",
+      "2026-07-06T22:35:33Z",
+      "9 CMS/chunker/persona files re-copied+renamed, 7 Core files replaced with correct family-prefixed versions, 2 live bugs found and fixed (list_renderer stale import, entry points' stale lib_mfdb_core duplicate), 1 production bug found and reported (not fixed - out of scope). Zero broken imports in reachable app path. 12 unused Core files still held pending user confirmation to delete.",
+      "3.0.6",
+      "3"
+    ],
+    [
+      "Final unused-Core purge: deleted remaining 10 flagged unused Core files per explicit confirmation.",
+      "2026-07-07T03:29:39Z",
+      "26 files remain in Lib_EXPCMS, all reachable/used, zero broken imports verified.",
+      "3.0.7",
+      "4"
+    ],
+    [
+      "Full audit: naming verified clean, 3 real bugs found+fixed (undefined _HAS_CORE flag, apps silently dropped from category pages, blank page titles/breadcrumbs sitewide), dead code removed, unused imports cleaned, readability pass on worst variable-naming offender.",
+      "2026-07-08T02:01:28Z",
+      "Verified via fresh full rebuild + HTML tag-balance check + pyflakes 0-warnings. Full report at docs/AUDIT_REPORT_2026-07-06.md. Also caught and fixed 2 self-inflicted regressions from own edits before delivery.",
+      "3.0.8",
+      "5"
+    ],
+    [
+      "CSS coverage audit (no code changes): 46 classes used across the CMS with zero CSS defined anywhere, confirming reported button/rendering issues.",
+      "2026-07-08T07:46:33Z",
+      "Worst offender: editor_main.html's entire c-bejson-form component (10 classes). 3 fully missing components (backup manager, image gallery, article page). 1 naming-drift case. Missing utility-class layer used across 8+ templates. Full report: docs/AUDIT_REPORT_CSS_2026-07-06.md.",
+      "3.0.8",
+      "6"
+    ],
+    [
+      "CSS coverage gap patched: 50 classes added (46 from audit + 4 found on re-verification), cross-referenced to master library Lib_PY/HTML.",
+      "2026-07-08T07:55:25Z",
+      "Nearly all pulled verbatim from bundled BECSS component library; 2 built fresh (backup manager, file browser rows) + minimal utility layer (BECSS has none by design). Verified: format() succeeds, re-audit shows 0 missing, confirmed live via curl against running Flask app, full rebuild succeeds. Master library file version 3.0.3->3.0.4. Full report: docs/CSS_FIX_REPORT_2026-07-06.md.",
+      "3.0.9",
+      "7"
+    ],
+    [
+      "UI cleanup: title+toolbar stacking fixed on all pages, sidebar rebuilt into 4 collapsible groups, build/repack/factory-reset moved to new /system page, /preview/<uuid> route added, CSS gap patch completed (0 missing classes).",
+      "2026-07-10T03:54:26Z",
+      "All 13 routes 200, 0 pyflakes warnings, full build succeeds. v3.1.0, pkg8.",
+      "3.1.0",
+      "8"
+    ],
+    [
+      "Bulk import crash fixed (None content_type AttributeError), entry points renamed to EXPCMS.py / EXPCMS_Builder.py, docs rewritten.",
+      "2026-07-10T10:56:12Z",
+      "All 14 routes 200, 0 pyflakes warnings, builder clean.",
+      "3.1.1",
+      "9"
+    ],
+    [
+      "Sidebar final cleanup: /build and /repack removed as sidebar links, active-link detection improved, labels tightened.",
+      "2026-07-10T10:58:16Z",
+      "Build/repack exist only as buttons on /system. v3.1.2, pkg10.",
+      "3.1.2",
+      "10"
+    ],
+    [
+      "Full audit: 11 bugs fixed across EXPCMS.py and all templates, 3 unused imports removed, 5 stale files deleted.",
+      "2026-07-13T01:32:14Z",
+      "Critical: category_fk field name mismatch fixed (every save was storing None category). copytree crash on 2nd build fixed. Dead temp_nav.bejson leak fixed. All 14 routes 200, 0 warnings, double-build verified.",
+      "3.1.3",
+      "11"
+    ],
+    [
+      "Built-site Playwright test pass: homepage blank content fixed, hero template fixed, Global_Skeleton rebuilt (no CDN deps), category/article skeletons rebuilt, footer accent var fixed. 7/7 pages passing.",
+      "2026-07-13T19:57:46Z",
+      "Zero JS errors, zero Jinja leaks, all h1/nav/breadcrumb checks passing.",
+      "3.1.4",
+      "12"
+    ],
+    [
+      "Garbage text removed (status-feed footer + telemetry header), admin sidebar icons fixed (inline SVGs replacing Lucide CDN), homepage hero fixed with real category browse buttons.",
+      "2026-07-17T08:35:24Z",
+      "All garbage text gone from built pages. Zero CDN dependencies in admin sidebar. 0 pyflakes warnings.",
+      "3.1.5",
+      "13"
+    ],
+    [
+      "Sidebar: Content renamed to Main, all groups start expanded, chevron direction fixed.",
+      "2026-07-17T08:40:27Z",
+      "All 15 links in groups, 4 groups all aria-expanded=true on load.",
+      "3.1.6",
+      "14"
+    ],
+    [
+      "Red-on-red sidebar fixed, remaining Lucide refs replaced, breadcrumbs (admin+built-site) made clickable, category context bug fixed in builder, author edit button made visible, HTML Import feature added (ported from BEJSON CMS production).",
+      "2026-07-18T02:49:00Z",
+      "Verified end-to-end: import test with Word/AI cruft passed all 8 checks, all routes 200, sidebar colors verified via computed style, breadcrumb links confirmed clickable.",
+      "3.2.0",
+      "15"
+    ],
+    [
+      "Portable widget system added: lib_expcms_widgets.py registry, 2 test widgets (Social Links, CTA Box), picker UI in editor, /widgets/picker + /widgets/render routes.",
+      "2026-07-19T15:29:54Z",
+      "15 automated checks passing including real built-site render with computed-CSS verification. Audit of prior session found 0 issues before starting.",
+      "3.3.0",
+      "16"
+    ],
+    [
+      "YouTube video media asset type added: new VideoAsset entity, self-healing migration, media library UI, YouTube Video widget.",
+      "2026-07-20T11:04:44Z",
+      "Found and fixed real bug: self-heal check wasn't actually wired into app startup. Verified against real existing DB. 16/16 routes 200, 11 automated checks + full built-site render test all passing.",
+      "3.4.0",
+      "17"
+    ],
+    [
+      "Audit response: 3 confirmed-dead files removed (orchestrator, persona_writer, list_renderer), real unescaped-HTML XSS-adjacent bug found and fixed in builder feed cards + a second-order autoescape bug caught in the same pass, /build subprocess replaced with in-process call, /categories server-side existence check replacing client-trusted flag, requirements.txt added.",
+      "2026-07-21T04:33:57Z",
+      "17/17 routes 200, XSS fix verified in real browser (malicious title renders as text, zero script execution), widget system unaffected, in-process build confirmed via process log.",
+      "3.5.0",
+      "18"
+    ],
+    [
+      "Added extensive 308 line technical README manual",
+      "2026-07-29T04:25:00Z",
+      "Published detailed system specifications, library isolation boundaries, component framework documentation, and performance benchmarks. Bumped package version to 19 per System Development Policy.",
+      "3.5.0",
+      "19"
+    ]
+  ]
+}

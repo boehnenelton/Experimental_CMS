@@ -1,0 +1,10 @@
+<!-- Component: Product Feed Card | v1.0 -->
+<div class="product-card">
+    <div class="product-img">
+        {% if featured_img %}<img src="{{ img_url }}">{% else %}<span>PRODUCT</span>{% endif %}
+    </div>
+    <div class="product-details">
+        <div class="product-title"><a href="{{ slug }}/index.html">{{ title }}</a></div>
+        <div class="product-price-row"><button class="product-add">VIEW</button></div>
+    </div>
+</div>

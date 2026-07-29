@@ -1,0 +1,120 @@
+{% extends "admin_base.html" %}
+
+{% block content %}
+<div class="c-image-gallery" container-type="inline-size" style="display: flex; flex-direction: column;">
+
+    <h1 class="emphasis" style="margin-bottom: 20px;">Media Orchestrator</h1>
+
+    <div class="content-card" style="margin-bottom: 20px;">
+        <p class="u-text-muted" style="margin-bottom: 16px; font-size: 0.85rem;">
+            Registry of system-wide binary assets. Files are indexed by SHA-256 for deduplication.
+        </p>
+        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+            <form action="/media/upload" method="POST" enctype="multipart/form-data"
+                  style="display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 240px;">
+                <label class="u-text-muted" style="font-size: 0.75rem; font-family: var(--font-mono); text-transform: uppercase;">Upload Files</label>
+                <input type="file" name="files" multiple
+                       style="font-size: 0.75rem; background: var(--bg-alt); padding: 8px; border-radius: 4px; border: 1px solid var(--border); color: var(--text-main);">
+                <button type="submit" class="btn-primary" style="padding: 10px 20px; font-size: 0.85rem;">UPLOAD FILES</button>
+            </form>
+            <form action="/media/upload" method="POST" enctype="multipart/form-data"
+                  style="display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 240px;">
+                <label class="u-text-muted" style="font-size: 0.75rem; font-family: var(--font-mono); text-transform: uppercase;">Bulk Folder Import</label>
+                <input type="file" name="files" webkitdirectory directory
+                       style="font-size: 0.75rem; background: var(--bg-alt); padding: 8px; border-radius: 4px; border: 1px solid var(--border); color: var(--text-main);">
+                <button type="submit" class="c-bejson-form__btn-submit" style="padding: 10px 20px; font-size: 0.85rem;">IMPORT FOLDER</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="content-card" style="margin-bottom: 20px;">
+        <p class="u-text-muted" style="margin-bottom: 16px; font-size: 0.85rem;">
+            Add a YouTube video by URL. Once added it's reusable across pages via the
+            YouTube Video widget in the page editor.
+        </p>
+        <form action="/media/video/add" method="POST" style="display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end;">
+            <div style="flex: 2; min-width: 240px;">
+                <label class="u-text-muted" style="display:block; font-size: 0.75rem; font-family: var(--font-mono); text-transform: uppercase; margin-bottom:6px;">YouTube URL</label>
+                <input type="text" name="video_url" placeholder="https://www.youtube.com/watch?v=..." required
+                       style="width:100%; font-size: 0.8rem; background: var(--bg-alt); padding: 10px; border-radius: 4px; border: 1px solid var(--border); color: var(--text-main);">
+            </div>
+            <div style="flex: 1; min-width: 180px;">
+                <label class="u-text-muted" style="display:block; font-size: 0.75rem; font-family: var(--font-mono); text-transform: uppercase; margin-bottom:6px;">Title (optional)</label>
+                <input type="text" name="video_title" placeholder="My video"
+                       style="width:100%; font-size: 0.8rem; background: var(--bg-alt); padding: 10px; border-radius: 4px; border: 1px solid var(--border); color: var(--text-main);">
+            </div>
+            <button type="submit" class="btn-primary" style="padding: 10px 20px; font-size: 0.85rem;">ADD VIDEO</button>
+        </form>
+    </div>
+
+    {% if videos %}
+    <h2 class="emphasis" style="margin-bottom: 16px; font-size: 1.1rem;">Videos</h2>
+    <div class="gallery-grid" style="margin-bottom: 32px;">
+        {% for v in videos %}
+        <div class="gallery-item" style="overflow: hidden; background: var(--bg-alt); position: relative;">
+            <img src="{{ v.thumbnail_url }}" style="width: 100%; height: 100%; object-fit: cover;">
+            <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:2rem; pointer-events:none; text-shadow: 0 2px 6px rgba(0,0,0,0.6);">▶</div>
+            <div class="gallery-overlay" style="display: flex; flex-direction: column; gap: 8px; font-size: 0.7rem; font-weight: 700;">
+                <button onclick="copyToClipboard('{{ v.url }}')"
+                        style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-weight: 700;">
+                    COPY URL
+                </button>
+                <a href="/media/video/delete/{{ v.video_uuid }}"
+                   onclick="return confirm('Remove {{ v.title or v.video_id }} from the library?')"
+                   style="background: rgba(222,38,38,0.8); border: none; color: #fff; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-weight: 700; text-align: center; text-decoration: none;">
+                    DELETE
+                </a>
+                <span style="font-size: 0.65rem; opacity: 0.7; text-align: center; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                    {{ v.title or v.video_id }}
+                </span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <h2 class="emphasis" style="margin-bottom: 16px; font-size: 1.1rem;">Files</h2>
+    <div class="gallery-grid">
+        {% for group_name, assets in groups %}
+            {% for a in assets %}
+            <div class="gallery-item" style="overflow: hidden; background: var(--bg-alt); position: relative;">
+                {% if a.mime_type and a.mime_type.startswith('image') %}
+                    <img src="/media/serve/{{ a.filename }}" style="width: 100%; height: 100%; object-fit: cover;">
+                {% else %}
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--text-muted);">
+                        <span style="width: 32px; height: 32px;">📄</span>
+                        <span style="font-size: 0.65rem; font-family: var(--font-mono);">{{ a.filename.split('.')[-1].upper() }}</span>
+                    </div>
+                {% endif %}
+                <div class="gallery-overlay" style="display: flex; flex-direction: column; gap: 8px; font-size: 0.7rem; font-weight: 700;">
+                    <button onclick="copyToClipboard('/media/serve/{{ a.filename }}')"
+                            style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-weight: 700;">
+                        COPY URL
+                    </button>
+                    <a href="/media/delete/{{ a.filename }}"
+                       onclick="return confirm('Delete {{ a.original_filename }}?')"
+                       style="background: rgba(222,38,38,0.8); border: none; color: #fff; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-weight: 700; text-align: center; text-decoration: none;">
+                        DELETE
+                    </a>
+                    <span style="font-size: 0.65rem; opacity: 0.7; text-align: center; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        {{ a.original_filename }}
+                    </span>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <div style="grid-column: 1 / -1; text-align: center; padding: 60px; color: var(--text-muted);">
+            No media assets found. Upload files above to populate the registry.
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(window.location.origin + text)
+        .then(() => alert('URL copied to clipboard'))
+        .catch(() => alert('Copy failed — URL: ' + text));
+}
+</script>
+{% endblock %}

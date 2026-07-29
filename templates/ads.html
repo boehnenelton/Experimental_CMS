@@ -1,0 +1,109 @@
+{% extends "admin_base.html" %}
+
+{% block content %}
+<h1 class="emphasis" style="margin-bottom: 16px;">Ad Rotator</h1>
+<div style="margin-bottom: 20px;">
+    <button onclick="document.getElementById('add-ad-modal').classList.remove('hidden')" class="btn-primary">+ NEW AD UNIT</button>
+</div>
+
+{% set columns = ['Campaign', 'Zone', 'Status'] %}
+{% set rows = [] %}
+{% for a in ads %}
+    {% set actions = [
+        {'url': 'javascript:editAd(' + a | tojson + ')', 'label': 'Edit', 'class': 'u-text-muted'},
+        {'url': '/ads/delete/' + a.ad_uuid, 'label': 'Delete', 'class': 'u-text-primary'}
+    ] %}
+    {% do rows.append({
+        'campaign': a.name,
+        'zone': a.zone,
+        'status': a.active,
+        '_actions': actions
+    }) %}
+{% endfor %}
+
+{% with columns=columns, rows=rows %}
+    {% include "components/backend/Data-Table.html" %}
+{% endwith %}
+
+<style>
+    .hidden { display: none !important; }
+    .modal-backdrop {
+        position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+        display: flex; align-items: center; justify-content: center;
+        z-index: 2000; backdrop-filter: blur(4px);
+    }
+</style>
+
+<div id="add-ad-modal" class="hidden modal-backdrop">
+    <div class="c-card" style="width: 100%; max-width: 450px;">
+        <h2 class="c-card__title" id="modal-title">Create Ad Unit</h2>
+        <form method="POST" style="display: flex; flex-direction: column; gap: 16px; margin-top: 20px;">
+            <input type="hidden" name="ad_uuid" id="form-ad-uuid">
+            <input type="hidden" name="active" id="form-ad-active" value="true">
+            <div>
+                <label style="font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted);">Campaign Name</label>
+                <input name="name" placeholder="Summer Promo 2026" style="width: 100%; padding: 12px; background: var(--bg-alt); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-main);" required>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div>
+                    <label style="font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted);">Banner Asset</label>
+                    <select name="image_url" style="width: 100%; padding: 12px; background: var(--bg-alt); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-main);">
+                        {% for a in assets %}
+                        <option value="{{ a.filename }}">{{ a.filename }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label style="font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted);">Target Zone</label>
+                    <select name="zone" style="width: 100%; padding: 12px; background: var(--bg-alt); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-main);">
+                        <option value="sidebar">Sidebar</option>
+                        <option value="header">Header</option>
+                        <option value="footer">Footer</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label style="font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted);">Destination URL</label>
+                <input name="link_url" placeholder="https://..." style="width: 100%; padding: 12px; background: var(--bg-alt); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-main);" required>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 10px;">
+                <button type="submit" class="c-code-box__copy" style="flex: 1; padding: 12px;" id="submit-btn">CREATE</button>
+                <button type="button" onclick="document.getElementById('add-ad-modal').classList.add('hidden')" style="flex: 1; padding: 12px; background: var(--bg-alt); border: 1px solid var(--border); color: var(--text-main); font-weight: 800; cursor: pointer;">CANCEL</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function editAd(a) {
+        document.getElementById('modal-title').innerText = "Edit Ad Unit";
+        document.getElementById('form-ad-uuid').value = a.ad_uuid;
+        document.getElementById('form-ad-active').value = a.active;
+        document.querySelector('[name="name"]').value = a.name;
+        document.querySelector('[name="image_url"]').value = a.image_url;
+        document.querySelector('[name="zone"]').value = a.zone;
+        document.querySelector('[name="link_url"]').value = a.link_url;
+        document.getElementById('submit-btn').innerText = "SAVE CHANGES";
+        document.getElementById('add-ad-modal').classList.remove('hidden');
+    }
+    
+    // Reset modal on manual open
+    const newBtn = document.querySelector('.u-flex .c-code-box__copy');
+    if (newBtn) {
+        newBtn.onclick = () => {
+            document.getElementById('modal-title').innerText = "Create Ad Unit";
+            document.getElementById('form-ad-uuid').value = "";
+            document.getElementById('form-ad-active').value = "true";
+            document.querySelector('[name="name"]').value = "";
+            document.querySelector('[name="image_url"]').value = "";
+            document.querySelector('[name="zone"]').value = "sidebar";
+            document.querySelector('[name="link_url"]').value = "";
+            document.getElementById('submit-btn').innerText = "CREATE";
+            document.getElementById('add-ad-modal').classList.remove('hidden');
+        };
+    }
+</script>
+{% endblock %}

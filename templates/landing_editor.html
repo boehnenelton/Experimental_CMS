@@ -1,0 +1,67 @@
+{% extends "admin_base.html" %}
+
+{% block content %}
+<div class="content-card">
+    <h1 class="emphasis">Landing Page Editor</h1>
+    <p class="u-text-muted mb-8">Choose what visitors see first when they land on your site.</p>
+
+    <form action="/landing_editor" method="POST" class="c-form">
+        <div class="c-field-group mb-8">
+            <label class="c-label">LANDING MODE</label>
+            <div class="flex gap-6 mt-2">
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" name="landing_mode" value="feed" {% if configs.get('landing_mode', 'feed') == 'feed' %}checked{% endif %}>
+                    <span>Dynamic Hero + Feed</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" name="landing_mode" value="html" {% if configs.get('landing_mode') == 'html' %}checked{% endif %}>
+                    <span>Custom HTML</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" name="landing_mode" value="image" {% if configs.get('landing_mode') == 'image' %}checked{% endif %}>
+                    <span>Hero Image</span>
+                </label>
+            </div>
+        </div>
+
+        <div id="section-html" class="c-field-group mb-8" style="display: none;">
+            <label class="c-label">CUSTOM HTML CONTENT</label>
+            <textarea name="landing_html" class="c-input" style="height: 300px; font-family: monospace;">{{ configs.get('landing_html', '') }}</textarea>
+        </div>
+
+        <div id="section-image" class="c-field-group mb-8" style="display: none;">
+            <label class="c-label">SELECT HERO IMAGE</label>
+            <select name="landing_image" class="c-input">
+                <option value="">-- No Image Selected --</option>
+                {% for a in assets %}
+                <option value="{{ a.filename }}" {% if configs.get('landing_image') == a.filename %}selected{% endif %}>{{ a.filename }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn-primary">SAVE CONFIGURATION</button>
+    </form>
+</div>
+
+<script>
+    const radios = document.querySelectorAll('input[name="landing_mode"]');
+    const secHtml = document.getElementById('section-html');
+    const secImg = document.getElementById('section-image');
+
+    function updateVisibility() {
+        const val = document.querySelector('input[name="landing_mode"]:checked').value;
+        secHtml.style.display = val === 'html' ? 'block' : 'none';
+        secImg.style.display = val === 'image' ? 'block' : 'none';
+    }
+
+    radios.forEach(r => r.addEventListener('change', updateVisibility));
+    updateVisibility();
+</script>
+
+<style>
+    .c-form { max-width: 800px; }
+    .c-label { display: block; font-size: 0.7rem; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 0.5rem; }
+    .c-input { width: 100%; background: #111; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 6px; outline: none; }
+    .c-input:focus { border-color: var(--primary); }
+</style>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Preview Manager | ExpCSS{% endblock %}
+
+{% block content %}
+<h1 class="emphasis" style="margin-bottom: 20px;">Preview Server</h1>
+
+<div style="display: flex; flex-direction: column; gap: 24px;">
+
+    <!-- Preview Node Card -->
+    <div class="c-card">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+            <div>
+                <h2 style="font-family: var(--font-mono); font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px;">Internal_Preview_Node</h2>
+                {% if running %}
+                <span class="u-badge u-badge--active" style="display: inline-flex; align-items: center; gap: 6px;">
+                    <span style="width: 6px; height: 6px; background: currentColor; border-radius: 50%;"></span> SYSTEM_ONLINE
+                </span>
+                {% else %}
+                <span class="u-badge u-badge--inactive" style="display: inline-flex; align-items: center; gap: 6px;">
+                    <span style="width: 6px; height: 6px; background: currentColor; border-radius: 50%;"></span> SYSTEM_OFFLINE
+                </span>
+                {% endif %}
+            </div>
+            <div>
+                {% if not running %}
+                <a href="/srv/start" class="c-code-box__copy" style="padding: 12px 24px;">START_SERVER</a>
+                {% else %}
+                <a href="/srv/stop" class="c-code-box__copy" style="padding: 12px 24px; background: var(--bg-alt); border: 1px solid var(--border); color: var(--text-main);">STOP_SERVER</a>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if running %}
+        <div class="c-card" style="background: var(--bg-alt); border-style: dashed; margin-bottom: 16px;">
+            <label style="font-family: var(--font-mono); font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 12px;">Public_Access_Endpoint</label>
+            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                <code id="preview-url" style="font-size: 1.1rem; font-weight: 800; color: var(--primary); flex: 1; word-break: break-all; min-width: 0;">{{ url }}</code>
+                <button onclick="copyURL()" class="c-code-box__copy" style="font-size: 0.7rem; padding: 8px 16px;">COPY</button>
+                <a href="{{ url }}" target="_blank" style="padding: 8px; background: var(--bg-alt); border: 1px solid var(--border); border-radius: var(--radius); display: flex; align-items: center; justify-content: center;">
+                    <span style="width: 18px; color: var(--text-main);">↗</span>
+                </a>
+            </div>
+        </div>
+        <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">
+            Protocol: HTTP/1.1 • Root: /Processing/www • Port: 8080
+        </div>
+        {% else %}
+        <div style="padding: 32px 0; text-align: center;">
+            <div style="width: 64px; height: 64px; background: var(--bg-alt); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; border: 1px solid var(--border);">
+                <span style="width: 32px; height: 32px; color: var(--text-muted);">⚡</span>
+            </div>
+            <h3 style="font-size: 0.9rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Server is dormant</h3>
+            <p style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); margin-top: 8px;">Initialize node to begin visual verification</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Build + Staging row: side-by-side on desktop, stacked on mobile -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px;">
+
+        <div class="content-card">
+            <p class="u-text-muted" style="font-size:0.85rem;">To build the site, go to <a href="/system">Build &amp; Tools</a>.</p>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    function copyURL() {
+        const url = document.getElementById('preview-url').innerText;
+        navigator.clipboard.writeText(url);
+        const btn = document.querySelector('button[onclick="copyURL()"]');
+        const original = btn.innerText;
+        btn.innerText = 'COPIED!';
+        setTimeout(() => { 
+            btn.innerText = original;
+        }, 2000);
+    }
+</script>
+{% endblock %}

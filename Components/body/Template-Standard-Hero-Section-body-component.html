@@ -1,0 +1,28 @@
+<!-- Component: Hero Section | v3.0 -->
+<section style="padding: 3rem 0 2rem;">
+    <h1 style="font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; color: #fff; margin-bottom: 0.75rem; line-height: 1.1; letter-spacing: -0.02em;">
+        {{ site_title }}
+    </h1>
+    {% if hero_sub %}
+    <p style="font-size: 1.05rem; color: var(--text-muted); max-width: 560px; line-height: 1.65; margin-bottom: 2rem;">
+        {{ hero_sub }}
+    </p>
+    {% endif %}
+    {% if categories %}
+    <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1.5rem;">
+        <p style="font-size: 0.65rem; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); margin-bottom: 0.5rem;">Browse</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+            {% for cat in categories %}
+            <a href="{{ cat.category_slug }}/index.html"
+               style="padding: 6px 14px; background: var(--surface); border: 1px solid var(--border);
+                      border-radius: 4px; color: var(--text); text-decoration: none; font-size: 0.8rem;
+                      font-weight: 600; transition: border-color 0.15s, color 0.15s;"
+               onmouseover="this.style.borderColor='var(--primary)';this.style.color='var(--primary)'"
+               onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">
+                {{ cat.category_name }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</section>

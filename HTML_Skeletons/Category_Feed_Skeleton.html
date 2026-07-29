@@ -1,0 +1,20 @@
+<!-- ExpCSS | Category Feed Skeleton v3.0 -->
+
+<h1 class="feed-title">{{ category_name }}</h1>
+{% if category_description %}
+<p class="feed-desc">{{ category_description }}</p>
+{% endif %}
+
+{% if feed_type == 'news' %}
+    <div class="feed-grid">{{ content_items | safe }}</div>
+{% elif feed_type == 'products' %}
+    <div class="product-grid">{{ content_items | safe }}</div>
+{% elif feed_type == 'masonry' %}
+    <div class="masonry-grid">{{ content_items | safe }}</div>
+{% else %}
+    <div class="feed-grid">{{ content_items | safe }}</div>
+{% endif %}
+
+{% if pagination_html %}
+<div style="margin-top: 2rem; text-align: center;">{{ pagination_html | safe }}</div>
+{% endif %}

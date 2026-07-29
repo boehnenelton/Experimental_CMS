@@ -1,0 +1,35 @@
+{% extends "admin_base.html" %}
+{% block title %}Global Config | ExpCSS{% endblock %}
+
+{% block content %}
+<h1 class="emphasis" style="margin-bottom: 16px;">Global Configuration</h1>
+
+<div class="content-card" style="margin-bottom: 20px;">
+    <p class="u-text-muted" style="font-size: 0.85rem; margin-bottom: 20px;">
+        Environment registry — key/value pairs injected into every page build.
+    </p>
+    <form method="POST" style="display: flex; flex-direction: column; gap: 16px;">
+        {% for key, value in configs.items() %}
+        <div>
+            <label>{{ key }}</label>
+            <input name="{{ key }}" value="{{ value }}">
+        </div>
+        {% endfor %}
+        <div>
+            <button type="submit" class="btn-primary">SAVE SETTINGS</button>
+        </div>
+    </form>
+</div>
+
+<div class="content-card">
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+        <div>
+            <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">System Health</div>
+            <span class="u-badge u-badge--active">STABLE</span>
+        </div>
+        <a href="/system" class="c-bejson-form__btn-reset" style="text-decoration: none; font-size: 0.8rem;">
+            Build &amp; Tools →
+        </a>
+    </div>
+</div>
+{% endblock %}

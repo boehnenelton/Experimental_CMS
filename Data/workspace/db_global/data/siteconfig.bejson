@@ -1,0 +1,55 @@
+{
+  "Format": "BEJSON",
+  "Format_Version": "104",
+  "Format_Creator": "Elton Boehnen",
+  "Parent_Hierarchy": "../104a.mfdb.bejson",
+  "Records_Type": [
+    "SiteConfig"
+  ],
+  "Fields": [
+    {
+      "name": "config_key",
+      "type": "string"
+    },
+    {
+      "name": "config_value",
+      "type": "string"
+    },
+    {
+      "name": "description",
+      "type": "string"
+    }
+  ],
+  "Values": [
+    [
+      "site_title",
+      "boehnenelton2024",
+      ""
+    ],
+    [
+      "site_tagline",
+      "Premium Dark Theme Templates",
+      ""
+    ],
+    [
+      "base_url",
+      "https://boehnenelton2024.pages.dev",
+      ""
+    ],
+    [
+      "landing_mode",
+      "html",
+      ""
+    ],
+    [
+      "landing_html",
+      "",
+      ""
+    ],
+    [
+      "landing_image",
+      "",
+      ""
+    ]
+  ]
+}

@@ -1,0 +1,137 @@
+{
+  "Format": "BEJSON",
+  "Format_Version": "104",
+  "Format_Creator": "Elton Boehnen",
+  "Parent_Hierarchy": "../104a.mfdb.bejson",
+  "Records_Type": [
+    "PageContent"
+  ],
+  "Fields": [
+    {
+      "name": "page_uuid_fk",
+      "type": "string"
+    },
+    {
+      "name": "html_body",
+      "type": "string"
+    },
+    {
+      "name": "markdown_body",
+      "type": "string"
+    },
+    {
+      "name": "source_files",
+      "type": "array"
+    },
+    {
+      "name": "video_url",
+      "type": "string"
+    },
+    {
+      "name": "pdf_url",
+      "type": "string"
+    },
+    {
+      "name": "pros",
+      "type": "array"
+    },
+    {
+      "name": "cons",
+      "type": "array"
+    },
+    {
+      "name": "verdict_score",
+      "type": "number"
+    }
+  ],
+  "Values": [
+    [
+      "c6d693b8-f3b7-43fb-b99f-f98ffa876e49",
+      "On the editor to combo box for the category selection foreign key option can be read cuz it fought appears to be the same color as the background \r\n\r\nAlso the page editor preview button does not work probably because there's no server to start first and if you were to integrate a server and a preview then make it in a pop-up dialog window with a start server button and then thenn X close AT THE TOP RIGHT\r\n\r\nOn the media uploader either there is no button to confirm the upload or it's invisible ... RENDERING IT INPOSSIBLE TO USE\r\nOn the pages section the new page button is invisible can't be seen \r\n\r\nOn things like the global config like you have the whole page to like use the space and like you're forcing me to write on a single line input box or like on the new page form when I'm like filling out page description I'm forced to like use it on a single line and then like when my text goes like to the end of the line like it's like keeps resetting and I can't actually see the text so like make it like a multi-line and put box and all cases and lessons just like a name I'll single work or something but if it's description make it a multi line input box you got plenty of space \r\n\r\nMost buttons throughout the app look like they're in an IDE made in 1995 they got no style at all\r\n\r\n",
+      "",
+      [],
+      "",
+      "",
+      [],
+      [],
+      0.0
+    ],
+    [
+      "1572685b-d638-4e5f-ad3d-b061e89b0627",
+      "<p>This is article 1 exploring the BEJSON positional integrity model. BEJSON uses field-map caching for O(1) lookups, atomic writes via temp-then-rename, and strict schema validation at every layer.</p><p>The MFDB federation layer adds multi-file entity routing on top, allowing databases to scale beyond a single file without sacrificing the flat simplicity that makes BEJSON portable on Android/Termux.</p>",
+      "",
+      [],
+      "",
+      "",
+      [],
+      [],
+      0.0
+    ],
+    [
+      "c87804ec-3193-4b61-b09a-429940b01d9e",
+      "<p>This is article 2 exploring the BEJSON positional integrity model. BEJSON uses field-map caching for O(1) lookups, atomic writes via temp-then-rename, and strict schema validation at every layer.</p><p>The MFDB federation layer adds multi-file entity routing on top, allowing databases to scale beyond a single file without sacrificing the flat simplicity that makes BEJSON portable on Android/Termux.</p>",
+      "",
+      [],
+      "",
+      "",
+      [],
+      [],
+      0.0
+    ],
+    [
+      "5f7aec76-2ce3-4d69-b04a-1726c16c9221",
+      "<p>This is article 3 exploring the BEJSON positional integrity model. BEJSON uses field-map caching for O(1) lookups, atomic writes via temp-then-rename, and strict schema validation at every layer.</p><p>The MFDB federation layer adds multi-file entity routing on top, allowing databases to scale beyond a single file without sacrificing the flat simplicity that makes BEJSON portable on Android/Termux.</p>",
+      "",
+      [],
+      "",
+      "",
+      [],
+      [],
+      0.0
+    ],
+    [
+      "bd51e2af-12db-443d-aa39-c481bbb93846",
+      "<p>Library version 201 ships with updated Core family naming, MFDB validator improvements, and full ES5-safe JavaScript compatibility for Android WebView.</p>",
+      "",
+      [],
+      "",
+      "",
+      [],
+      [],
+      0.0
+    ],
+    [
+      "80080765-88f2-4484-8cad-5f4ac4852637",
+      "<p>Library version 202 ships with updated Core family naming, MFDB validator improvements, and full ES5-safe JavaScript compatibility for Android WebView.</p>",
+      "",
+      [],
+      "",
+      "",
+      [],
+      [],
+      0.0
+    ],
+    [
+      "e508e633-1310-4e4f-b96d-2e81c30e10f7",
+      "<p>Visual item 1 in the masonry grid.</p>",
+      "",
+      [],
+      "",
+      "",
+      [],
+      [],
+      0.0
+    ],
+    [
+      "23a104b0-c9e5-44c1-b2cb-860525c87d9c",
+      "<p>Visual item 2 in the masonry grid.</p>",
+      "",
+      [],
+      "",
+      "",
+      [],
+      [],
+      0.0
+    ]
+  ]
+}

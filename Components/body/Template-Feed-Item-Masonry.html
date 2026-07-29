@@ -1,0 +1,5 @@
+<!-- Component: Masonry Feed Item | v1.0 -->
+<div class="masonry-item">
+    {% if featured_img %}<img src="{{ img_url }}">{% else %}<div style="height:200px;background:#222;"></div>{% endif %}
+    <div class="masonry-overlay"><div class="masonry-title"><a href="{{ slug }}/index.html">{{ title }}</a></div></div>
+</div>

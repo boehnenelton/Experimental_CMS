@@ -1,0 +1,39 @@
+<!-- Component: Admin Data Table | Type: Backend Fragment | Version: 2.0.0 (BECSS) -->
+<div class="c-card" style="padding: 0; overflow: hidden;">
+    <div class="c-table-container">
+        <table class="c-table">
+            <thead>
+                <tr>
+                    {% for col in columns %}
+                    <th>{{ col }}</th>
+                    {% endfor %}
+                    <th style="text-align: right;">ACTIONS</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                <tr>
+                    {% for key, val in row.items() %}
+                    {% if key != '_actions' %}
+                    <td>
+                        {% if key == 'status' %}
+                            <span class="u-badge u-badge--{{ 'active' if val else 'inactive' }}">{{ 'ACTIVE' if val else 'INACTIVE' }}</span>
+                        {% elif key == 'slug' or key == 'uuid' or key == 'url' %}
+                            <code style="color: var(--primary);">{{ val }}</code>
+                        {% else %}
+                            {{ val }}
+                        {% endif %}
+                    </td>
+                    {% endif %}
+                    {% endfor %}
+                    <td style="text-align: right;">
+                        {% for action in row._actions %}
+                        <a href="{{ action.url }}" class="{{ action.class }}" style="font-weight: 800; font-size: 0.75rem; text-transform: uppercase; margin-left: 12px;">{{ action.label }}</a>
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,36 @@
+{
+  "Format": "BEJSON",
+  "Format_Version": "104",
+  "Format_Creator": "Elton Boehnen",
+  "Parent_Hierarchy": "../104a.mfdb.bejson",
+  "Records_Type": [
+    "MediaAsset"
+  ],
+  "Fields": [
+    {
+      "name": "filename",
+      "type": "string"
+    },
+    {
+      "name": "original_name",
+      "type": "string"
+    },
+    {
+      "name": "file_hash",
+      "type": "string"
+    },
+    {
+      "name": "file_size",
+      "type": "integer"
+    },
+    {
+      "name": "mime_type",
+      "type": "string"
+    },
+    {
+      "name": "uploaded_at",
+      "type": "string"
+    }
+  ],
+  "Values": []
+}

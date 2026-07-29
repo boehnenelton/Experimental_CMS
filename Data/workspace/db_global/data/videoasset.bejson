@@ -1,0 +1,40 @@
+{
+  "Format": "BEJSON",
+  "Format_Version": "104",
+  "Format_Creator": "Elton Boehnen",
+  "Parent_Hierarchy": "../104a.mfdb.bejson",
+  "Records_Type": [
+    "VideoAsset"
+  ],
+  "Fields": [
+    {
+      "name": "video_uuid",
+      "type": "string"
+    },
+    {
+      "name": "url",
+      "type": "string"
+    },
+    {
+      "name": "video_id",
+      "type": "string"
+    },
+    {
+      "name": "provider",
+      "type": "string"
+    },
+    {
+      "name": "title",
+      "type": "string"
+    },
+    {
+      "name": "thumbnail_url",
+      "type": "string"
+    },
+    {
+      "name": "added_at",
+      "type": "string"
+    }
+  ],
+  "Values": []
+}

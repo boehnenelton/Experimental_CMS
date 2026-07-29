@@ -1,0 +1,57 @@
+{% extends "admin_base.html" %}
+{% block title %}System Tools | ExpCSS{% endblock %}
+
+{% block content %}
+<h1 class="emphasis" style="margin-bottom: 20px;">System Tools</h1>
+
+<div class="stats-grid" style="margin-bottom: 32px;">
+    <div class="stat-card">
+        <div class="stat-value"><span style="font-size:2rem;">🔨</span></div>
+        <div class="stat-label">Build Site</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value"><span style="font-size:2rem;">🔄</span></div>
+        <div class="stat-label">Repack System</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value"><span style="font-size:2rem;">🗑️</span></div>
+        <div class="stat-label">Factory Reset</div>
+    </div>
+</div>
+
+<div class="content-card" style="margin-bottom: 20px;">
+    <h2 class="emphasis" style="margin-bottom: 8px;">Build Site</h2>
+    <p class="u-text-muted" style="margin-bottom: 20px; font-size: 0.85rem;">
+        Compiles all content from the MFDB into a static HTML site in <code>/Processing/www</code>.
+        Run this after making content changes to update the live output.
+    </p>
+    <a href="/build" class="btn-primary" style="text-decoration: none; display: inline-block;">
+        RUN BUILD
+    </a>
+</div>
+
+<div class="content-card" style="margin-bottom: 20px;">
+    <h2 class="emphasis" style="margin-bottom: 8px;">Repack System</h2>
+    <p class="u-text-muted" style="margin-bottom: 20px; font-size: 0.85rem;">
+        Re-indexes all MFDB entity files and reconciles the manifest.
+        Run this after manual file edits outside the CMS or after a restore.
+    </p>
+    <a href="/repack" class="btn-primary" style="text-decoration: none; display: inline-block;">
+        RUN REPACK
+    </a>
+</div>
+
+<div class="content-card" style="border: 1px solid #DE2626;">
+    <h2 style="color: #DE2626; margin-bottom: 8px;">Factory Reset</h2>
+    <p class="u-text-muted" style="margin-bottom: 20px; font-size: 0.85rem;">
+        Wipes all MFDB content and reinitializes the system from scratch.
+        <strong style="color: #DE2626;">This is irreversible.</strong> Create a backup first.
+    </p>
+    <a href="/factory_reset"
+       onclick="return confirm('WARNING: Factory reset will destroy all content. Are you absolutely sure?')"
+       style="background: #DE2626; color: #fff; text-decoration: none; display: inline-block;
+              padding: 14px 28px; border-radius: 8px; font-weight: 700; font-size: 1.05rem;">
+        FACTORY RESET
+    </a>
+</div>
+{% endblock %}

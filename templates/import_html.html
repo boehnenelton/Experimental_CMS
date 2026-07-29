@@ -1,0 +1,54 @@
+{% extends "admin_base.html" %}
+{% block title %}HTML Import | ExpCSS{% endblock %}
+
+{% block content %}
+<h1 class="emphasis" style="margin-bottom: 16px;">HTML Import</h1>
+
+<div class="content-card" style="margin-bottom: 20px;">
+    <p class="u-text-muted" style="font-size: 0.85rem; margin-bottom: 20px;">
+        Upload one or more <code>.html</code>/<code>.htm</code> files to import as new pages.
+        Word artefacts (Mso classes, mso- styles, o:p tags) and short AI/tool watermark
+        boilerplate are stripped automatically. Title is auto-detected from
+        <code>&lt;title&gt;</code> or the first <code>&lt;h1&gt;</code> if present.
+    </p>
+
+    <form method="POST" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 16px;">
+
+        <div>
+            <label style="display:block; font-size:0.75rem; font-family:var(--font-mono); text-transform:uppercase; color:var(--text-muted); margin-bottom:6px;">
+                HTML Files
+            </label>
+            <input type="file" name="html_files" accept=".html,.htm" multiple required
+                   style="width:100%; font-size:0.8rem; background:var(--bg-alt); padding:10px; border-radius:4px; border:1px solid var(--border); color:var(--text-main);">
+        </div>
+
+        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+            <div style="flex:1; min-width:200px;">
+                <label style="display:block; font-size:0.75rem; font-family:var(--font-mono); text-transform:uppercase; color:var(--text-muted); margin-bottom:6px;">
+                    Target Category
+                </label>
+                <select name="category" class="c-bejson-form__input" style="width:100%;">
+                    {% for c in cats %}
+                    <option value="{{ c.category_slug }}">{{ c.category_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div style="flex:1; min-width:200px;">
+                <label style="display:block; font-size:0.75rem; font-family:var(--font-mono); text-transform:uppercase; color:var(--text-muted); margin-bottom:6px;">
+                    Author (optional)
+                </label>
+                <select name="author_uuid" class="c-bejson-form__input" style="width:100%;">
+                    <option value="">— None —</option>
+                    {% for a in authors %}
+                    <option value="{{ a.author_uuid }}">{{ a.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div>
+            <button type="submit" class="btn-primary">IMPORT FILES</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
