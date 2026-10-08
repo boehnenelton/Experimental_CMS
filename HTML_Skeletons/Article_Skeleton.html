@@ -1,0 +1,33 @@
+<!-- ExpCSS | Article Skeleton v3.0 -->
+<article>
+    <h1>{{ title }}</h1>
+
+    <div class="article-meta">
+        {% if author %}<span>&#128100; {{ author.name }}</span>{% endif %}
+        {% if created_at %}<span>&#128197; {{ created_at }}</span>{% endif %}
+        <span class="tag">{{ category_name }}</span>
+    </div>
+
+    {% if featured_img %}
+    <div style="margin-bottom: 1.5rem; border-radius: 8px; overflow: hidden;">
+        <img src="{{ rel_prefix }}assets/{{ featured_img }}" alt="{{ title }}" style="width:100%; height:auto; display:block;">
+    </div>
+    {% endif %}
+
+    <div class="article-body">
+        {{ html_body | safe }}
+    </div>
+
+    {% if author %}
+    <div style="margin-top: 2.5rem; padding: 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+        {% if author.image_url %}
+        <img src="{{ rel_prefix }}assets/{{ author.image_url }}" alt="{{ author.name }}"
+             style="width:56px; height:56px; border-radius:50%; object-fit:cover; border: 2px solid var(--primary); flex-shrink:0;">
+        {% endif %}
+        <div>
+            <div style="font-weight:800; color:#fff;">{{ author.name }}</div>
+            {% if author.bio %}<div style="font-size:0.8rem; color: var(--text-muted); margin-top:2px;">{{ author.bio }}</div>{% endif %}
+        </div>
+    </div>
+    {% endif %}
+</article>

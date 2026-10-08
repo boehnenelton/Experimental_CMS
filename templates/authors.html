@@ -1,0 +1,107 @@
+{% extends "admin_base.html" %}
+
+{% block content %}
+<h1 class="emphasis" style="margin-bottom: 16px;">Authors</h1>
+<div style="margin-bottom: 20px;">
+    <button id="new-author-open-btn" class="btn-primary">+ NEW AUTHOR</button>
+</div>
+
+<div class="c-card-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">
+    {% for a in authors %}
+    <div class="c-card" style="display: flex; align-items: center; gap: 1rem;">
+        <div style="width: 64px; height: 64px; border-radius: 50%; overflow: hidden; border: 2px solid var(--border); background: var(--bg-alt); flex-shrink: 0;">
+            {% if a.image_url %}
+            <img src="/media/serve/{{ a.image_url }}" style="width: 100%; height: 100%; object-fit: cover;">
+            {% else %}
+            <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--text-muted);"><span style="">👤</span></div>
+            {% endif %}
+        </div>
+        <div style="flex: 1; min-width: 0;">
+            <h3 class="c-card__title" style="margin-bottom: 2px; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ a.name }}</h3>
+            <div class="c-card__body" style="font-size: 0.75rem; opacity: 0.7; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">{{ a.bio }}</div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            <button onclick='editAuthor({{ a | tojson | safe }})' title="Edit profile" style="background: var(--bg-alt); border: 1px solid var(--border); border-radius: 4px; color: var(--text-main); cursor: pointer; padding: 6px 8px; font-size: 0.9rem; line-height: 1;">✏️</button>
+            <form method="POST" action="/authors/delete/{{ a.author_uuid }}" onsubmit="return confirm('Delete author?')" style="display:contents;">
+                <button type="submit" title="Delete profile" style="background: var(--bg-alt); border: 1px solid var(--border); border-radius: 4px; color: var(--primary); cursor: pointer; padding: 6px 8px; font-size: 0.9rem; line-height: 1;">🗑</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<style>
+    .hidden { display: none !important; }
+    .modal-backdrop {
+        position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+        display: flex; align-items: center; justify-content: center;
+        z-index: 2000; backdrop-filter: blur(4px);
+        padding: 1rem;
+    }
+</style>
+
+<div id="add-author-modal" class="hidden modal-backdrop">
+    <div class="c-card" style="width: 100%; max-width: 400px; padding: 1.5rem !important;">
+        <h2 class="c-card__title" id="modal-title" style="margin-bottom: 1.5rem;">Add Author Profile</h2>
+        <form method="POST" style="display: flex; flex-direction: column; gap: 1rem;">
+            <input type="hidden" name="author_uuid" id="form-author-uuid">
+            <div>
+                <label>Display Name</label>
+                <input name="name" placeholder="John Doe" required>
+            </div>
+
+            <div>
+                <label>Biography</label>
+                <textarea name="bio" placeholder="Short bio..." style="min-height: 80px;" required></textarea>
+            </div>
+
+            <div>
+                <label>Avatar Asset</label>
+                <select name="image_url">
+                    <option value="">-- NO IMAGE --</option>
+                    {% for a in assets %}
+                    <option value="{{ a.filename }}">{{ a.filename }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 0.5rem;">
+                <button type="submit" class="c-code-box__copy" style="flex: 1; padding: 10px;" id="submit-btn">CREATE</button>
+                <button type="button" onclick="document.getElementById('add-author-modal').classList.add('hidden')" style="flex: 1; padding: 10px; background: #222; border: 1px solid #333; color: #fff; font-weight: 800; cursor: pointer; border-radius: var(--radius);">CANCEL</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function editAuthor(a) {
+        document.getElementById('modal-title').innerText = "Edit Author Profile";
+        document.getElementById('form-author-uuid').value = a.author_uuid;
+        document.querySelector('[name="name"]').value = a.name;
+        document.querySelector('[name="bio"]').value = a.bio;
+        document.querySelector('[name="image_url"]').value = a.image_url || "";
+        document.getElementById('submit-btn').innerText = "SAVE CHANGES";
+        document.getElementById('add-author-modal').classList.remove('hidden');
+    }
+    
+    // Reset modal on manual open
+    // FIX (2026-08-05): was querySelector('.c-code-box__copy'), which matches
+    // the modal's own CREATE/submit button (id="submit-btn"), not this open
+    // button. That wired the reset-to-blank logic to fire on submit click,
+    // clearing the required Name/Bio fields right before native validation
+    // ran - so the browser blocked submission and no author was ever
+    // created. Now targets the open button by id instead.
+    const newBtn = document.getElementById('new-author-open-btn');
+    if (newBtn) {
+        newBtn.onclick = () => {
+            document.getElementById('modal-title').innerText = "Add Author Profile";
+            document.getElementById('form-author-uuid').value = "";
+            document.querySelector('[name="name"]').value = "";
+            document.querySelector('[name="bio"]').value = "";
+            document.querySelector('[name="image_url"]').value = "";
+            document.getElementById('submit-btn').innerText = "CREATE";
+            document.getElementById('add-author-modal').classList.remove('hidden');
+        };
+    }
+</script>
+{% endblock %}

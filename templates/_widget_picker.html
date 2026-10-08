@@ -1,0 +1,27 @@
+<!-- Widget picker modal fragment, loaded into editor_main.html via fetch() -->
+<div style="display: flex; flex-direction: column; gap: 16px;">
+    {% for key, w in widgets.items() %}
+    <div style="border: 1px solid var(--border); border-radius: 6px; padding: 16px; background: var(--bg-alt);">
+        <div style="font-weight: 700; font-size: 0.95rem; color: var(--text-main); margin-bottom: 4px;">{{ w.label }}</div>
+        <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">{{ w.description }}</div>
+
+        <form class="widget-insert-form" data-widget-key="{{ key }}" style="display: flex; flex-direction: column; gap: 10px;">
+            {% for p in w.params %}
+            <div>
+                <label style="display:block; font-size:0.7rem; font-family:var(--font-mono); text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">
+                    {{ p.label }}
+                </label>
+                {% if p.type == 'textarea' %}
+                <textarea name="{{ p.name }}" rows="3" class="c-bejson-form__textarea" style="font-size:0.75rem; height:auto;">{{ p.default }}</textarea>
+                {% else %}
+                <input type="text" name="{{ p.name }}" value="{{ p.default }}" class="c-bejson-form__input">
+                {% endif %}
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn-primary" style="align-self: flex-start; font-size: 0.8rem; padding: 8px 16px;">
+                Insert {{ w.label }}
+            </button>
+        </form>
+    </div>
+    {% endfor %}
+</div>

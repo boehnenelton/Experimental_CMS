@@ -1,0 +1,83 @@
+<!-- Component: Admin Data Table | Type: Backend Fragment | Version: 2.2.0 (BECSS) -->
+<!-- CHANGE (2026-08-11, audit M4): actions with method == 'POST' now
+     render as a tiny inline <form> + submit button styled as a link,
+     instead of an <a href> GET link. GET links to destructive endpoints
+     are triggerable via <img src> etc. from any page the admin visits
+     (CSRF); a plain-navigation <a> can't forge a POST. Non-destructive
+     actions (method unset/'GET', e.g. Edit) are unaffected. -->
+<!-- CHANGE (2026-08-05): Added opt-in `actions_position` var ('left' | 'right',
+     default 'right' — unchanged for existing callers) and per-action `confirm`
+     text rendered as a JS confirm() dialog before navigating the action link. -->
+{% set actions_position = actions_position | default('right') %}
+<div class="c-card" style="padding: 0; overflow: hidden;">
+    <div class="c-table-container">
+        <table class="c-table">
+            <thead>
+                <tr>
+                    {% if actions_position == 'left' %}
+                    <th>ACTIONS</th>
+                    {% endif %}
+                    {% for col in columns %}
+                    <th>{{ col }}</th>
+                    {% endfor %}
+                    {% if actions_position != 'left' %}
+                    <th style="text-align: right;">ACTIONS</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                <tr>
+                    {% if actions_position == 'left' %}
+                    <td style="white-space: nowrap;">
+                        {% for action in row._actions %}
+                        {% if action.method == 'POST' %}
+                        <form method="POST" action="{{ action.url }}" style="display:inline;"
+                              {% if action.confirm %}onsubmit="return confirm({{ action.confirm | tojson }})"{% endif %}>
+                            <button type="submit" class="{{ action.class }}"
+                                    style="background:none; border:none; cursor:pointer; font-weight: 800; font-size: 0.75rem; text-transform: uppercase; margin-right: 12px; padding: 0;">{{ action.label }}</button>
+                        </form>
+                        {% else %}
+                        <a href="{{ action.url }}" class="{{ action.class }}"
+                           {% if action.confirm %}onclick="return confirm({{ action.confirm | tojson }})"{% endif %}
+                           style="font-weight: 800; font-size: 0.75rem; text-transform: uppercase; margin-right: 12px;">{{ action.label }}</a>
+                        {% endif %}
+                        {% endfor %}
+                    </td>
+                    {% endif %}
+                    {% for key, val in row.items() %}
+                    {% if key != '_actions' %}
+                    <td>
+                        {% if key == 'status' %}
+                            <span class="u-badge u-badge--{{ 'active' if val else 'inactive' }}">{{ 'ACTIVE' if val else 'INACTIVE' }}</span>
+                        {% elif key == 'slug' or key == 'uuid' or key == 'url' %}
+                            <code style="color: var(--primary);">{{ val }}</code>
+                        {% else %}
+                            {{ val }}
+                        {% endif %}
+                    </td>
+                    {% endif %}
+                    {% endfor %}
+                    {% if actions_position != 'left' %}
+                    <td style="text-align: right;">
+                        {% for action in row._actions %}
+                        {% if action.method == 'POST' %}
+                        <form method="POST" action="{{ action.url }}" style="display:inline;"
+                              {% if action.confirm %}onsubmit="return confirm({{ action.confirm | tojson }})"{% endif %}>
+                            <button type="submit" class="{{ action.class }}"
+                                    style="background:none; border:none; cursor:pointer; font-weight: 800; font-size: 0.75rem; text-transform: uppercase; margin-left: 12px; padding: 0;">{{ action.label }}</button>
+                        </form>
+                        {% else %}
+                        <a href="{{ action.url }}" class="{{ action.class }}"
+                           {% if action.confirm %}onclick="return confirm({{ action.confirm | tojson }})"{% endif %}
+                           style="font-weight: 800; font-size: 0.75rem; text-transform: uppercase; margin-left: 12px;">{{ action.label }}</a>
+                        {% endif %}
+                        {% endfor %}
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

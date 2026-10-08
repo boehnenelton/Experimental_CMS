@@ -1,0 +1,37 @@
+{
+  "Format": "BEJSON",
+  "Format_Version": "104",
+  "Format_Creator": "Elton Boehnen",
+  "Records_Type": [
+    "www"
+  ],
+  "Fields": [
+    {
+      "name": "version",
+      "type": "string"
+    },
+    {
+      "name": "file_path",
+      "type": "string"
+    },
+    {
+      "name": "file_name",
+      "type": "string"
+    },
+    {
+      "name": "content",
+      "type": "string"
+    },
+    {
+      "name": "is_binary",
+      "type": "boolean"
+    },
+    {
+      "name": "is_base64",
+      "type": "boolean"
+    }
+  ],
+  "Values": [],
+  "Parent_Hierarchy": "../104a.mfdb.bejson",
+  "Changelog_Latest": "[v1_0_0] audit smoke test"
+}

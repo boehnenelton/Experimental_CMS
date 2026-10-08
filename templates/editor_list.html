@@ -1,0 +1,42 @@
+{% extends "admin_base.html" %}
+
+{% block content %}
+<h1 class="emphasis" style="margin-bottom: 16px;">Indexed Pages</h1>
+<div style="margin-bottom: 20px;">
+    <a href="/new" class="btn-primary" style="text-decoration: none; font-size: 0.85rem;">+ CREATE PAGE</a>
+</div>
+<div class="content-card">
+
+    {% set columns = ['Title', 'Category', 'Type', 'Created At'] %}
+    {% set rows = [] %}
+    {% for r in pages_doc.Values %}
+        {% set actions = [
+            {'url': '/edit/' + r[0], 'label': 'Edit', 'class': 'u-text-muted'},
+            {'url': '/pages/delete/' + r[0], 'label': 'Delete', 'class': 'u-text-primary', 'method': 'POST', 'confirm': 'Delete "' + (r[1] or 'this page') + '"? This cannot be undone.'}
+        ] %}
+        {% do rows.append({
+            'title': r[1],
+            'category': r[3],
+            'type': r[5],
+            'created_at': r[7],
+            '_actions': actions
+        }) %}
+    {% endfor %}
+
+    {% with columns=columns, rows=rows, actions_position='left' %}
+        {% include "components/backend/Data-Table.html" %}
+    {% endwith %}
+</div>
+
+<style>
+    /* Table Styling for HTML3 */
+    .c-bejson-table { width: 100%; color: #ccc; }
+    .c-bejson-table__table { width: 100%; border-collapse: collapse; }
+    .c-bejson-table__th { background: #111; padding: 12px; text-align: left; font-size: 0.7rem; text-transform: uppercase; color: #666; border-bottom: 2px solid var(--border); }
+    .c-bejson-table__td { padding: 12px; border-bottom: 1px solid #111; font-size: 0.85rem; }
+    .c-bejson-table__tr:hover { background: #151515; }
+    .c-bejson-table__btn { background: #222; border: 1px solid #333; color: #fff; padding: 4px 8px; border-radius: 2px; cursor: pointer; font-size: 0.7rem; }
+    .c-bejson-table__btn:hover { border-color: var(--primary); color: var(--primary); }
+    .c-input { background: #111; border: 1px solid #333; color: #fff; padding: 4px; border-radius: 4px; }
+</style>
+{% endblock %}

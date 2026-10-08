@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ExpCSS Admin{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Code+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        {{ becss_css | safe }}
+        
+        /* --- CMS High-Density & High-Contrast Overrides --- */
+        :root {
+            --sidebar-width: 240px;
+        }
+        
+        body { background-color: var(--bg-page); color: var(--text-main); font-family: var(--font-sans); line-height: 1.5; }
+
+        .c-header { 
+            background: #000 !important; 
+            color: #fff !important; 
+            border-bottom: 2px solid var(--primary) !important;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .c-header__logo { color: #fff !important; font-weight: 800; font-size: 1rem; letter-spacing: -0.02em; }
+        .c-header__logo span { color: var(--primary); }
+        
+        .c-container { 
+            display: flex; 
+            min-height: calc(100vh - 96px);
+            align-items: stretch;
+            padding: 0;
+            gap: 0;
+        }
+        
+        .c-sidebar { 
+            width: var(--sidebar-width); 
+            background: var(--bg-alt);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+        
+        .c-sidebar__header {
+            padding: 0.75rem 1rem;
+            background: #000;
+            color: #fff;
+            font-family: var(--font-mono);
+            font-size: 0.55rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            font-weight: 700;
+            border-bottom: 1px solid #222;
+        }
+
+        .c-sidebar__top { flex: 1; padding: 0.25rem; overflow-y: auto; }
+        .c-sidebar__bottom { 
+            padding: 8px 12px; 
+            font-size: 0.6rem; 
+            font-family: var(--font-mono); 
+            background: #000; 
+            color: #555; 
+            border-top: 1px solid #111; 
+        }
+        .c-sidebar__bottom span { color: var(--primary); font-weight: 800; }
+
+        .c-main-content { 
+            flex: 1; 
+            padding: 0.5rem; 
+            min-width: 0;
+            background: var(--bg-page);
+        }
+        
+        h1, h2, h3, .c-card__title { color: #000 !important; font-weight: 800; margin-bottom: 0.5rem; line-height: 1.2; }
+        p { margin-bottom: 1rem; color: var(--text-main); }
+        
+        .c-breadcrumbs { 
+            font-size: 0.65rem; 
+            text-transform: uppercase; 
+            letter-spacing: 0.05em; 
+            color: var(--text-muted); 
+            margin-bottom: 0.75rem;
+            padding: 4px 0 8px 0;
+            border-bottom: 1px solid var(--border-muted);
+        }
+        .c-breadcrumbs span { color: var(--primary); font-weight: 800; }
+
+        .c-hamburger {
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            padding: 6px;
+            margin-right: 8px;
+        }
+        .c-hamburger span {
+            display: block;
+            width: 16px;
+            height: 2px;
+            background: #fff;
+            transition: var(--transition);
+        }
+
+        @media (min-width: 1025px) {
+            .c-hamburger { display: none; }
+        }
+
+        @media (max-width: 1024px) {
+            .c-sidebar { position: fixed; left: -240px; z-index: 1100; height: 100dvh; transition: left 0.3s ease; }
+            .c-sidebar--open { left: 0; }
+            .c-sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1050; backdrop-filter: blur(4px); }
+            .c-sidebar-overlay--open { display: block; }
+        }
+
+        /* --- Basic Body Formatting Improvements --- */
+        .c-main-content a:not(.c-sidebar__link):not(.c-code-box__copy):not(.u-badge):not(.btn-primary) {
+            color: var(--primary);
+            text-decoration: underline;
+            text-decoration-thickness: 1px;
+            text-underline-offset: 2px;
+        }
+        .c-main-content a:hover { color: #000; }
+        
+        ul, ol { margin-bottom: 1rem; padding-left: 1.25rem; }
+        li { margin-bottom: 0.25rem; }
+        
+        hr { border: none; border-top: 1px solid var(--border-muted); margin: 1.5rem 0; }
+        
+        code { font-family: var(--font-mono); background: var(--bg-alt); padding: 2px 6px; border-radius: 4px; font-size: 0.85em; border: 1px solid var(--border-muted); }
+
+        /* --- Dashboard Specific Styles --- */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem; }
+        .stat-card { 
+            background: var(--bg-alt); 
+            border: 1px solid var(--border); 
+            padding: 1rem; 
+            border-radius: var(--radius); 
+            text-align: center;
+            transition: var(--transition);
+        }
+        .stat-card:hover { border-color: var(--primary); background: var(--bg-page); }
+        .stat-value { font-size: 1.5rem; font-weight: 800; color: #000; margin-bottom: 0.25rem; }
+        .stat-label { font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted); font-family: var(--font-mono); letter-spacing: 0.05em; }
+
+        /* --- Input Box Hardening (Dark Theme Inputs) --- */
+        input, select, textarea {
+            background: #111 !important;
+            color: #fff !important;
+            border: 1px solid #333 !important;
+            padding: 10px 12px !important;
+            border-radius: var(--radius) !important;
+            font-family: var(--font-sans) !important;
+            font-size: 0.85rem !important;
+            outline: none !important;
+            width: 100%;
+            transition: border-color 0.2s ease;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary) !important;
+        }
+        label {
+            display: block;
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            letter-spacing: 0.05em;
+        }
+
+        /* Tighten Cards */
+        .c-card { padding: 0.75rem !important; margin-bottom: 0.75rem !important; border: 1px solid var(--border) !important; }
+        .c-stats-bar { padding: 0.5rem !important; margin-bottom: 1rem !important; }
+
+        .flash-message {
+            margin-bottom: 1rem;
+            padding: 8px 12px;
+            border-radius: var(--radius);
+            font-size: 0.85rem;
+            font-weight: 600;
+            background: var(--bg-alt);
+            color: var(--primary);
+            border: 1px solid var(--border);
+        }
+        .c-footer {
+            padding: 8px 12px;
+            font-size: 0.6rem;
+            font-family: var(--font-mono);
+            background: #000;
+            color: #444;
+            border-top: 1px solid #111;
+            text-align: center;
+        }
+        .c-footer a { color: var(--primary); text-decoration: none; }
+    </style>
+    
+</head>
+<body>
+    <header class="c-header">
+        <div class="c-hamburger" id="navToggle" onclick="document.querySelector('.c-sidebar').classList.toggle('c-sidebar--open');document.querySelector('.c-sidebar-overlay').classList.toggle('c-sidebar-overlay--open');">
+            <span></span><span></span><span></span>
+        </div>
+        <div class="c-header__logo">ExpCSS <span>ADMIN</span></div>
+        <div style="flex:1"></div>
+        <div style="font-size:0.5rem; color:#333; font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.1em;">MFDB v1.31 // ACTIVE</div>
+    </header>
+
+    <div class="c-sidebar-overlay" id="overlay" onclick="this.classList.remove('c-sidebar-overlay--open');document.querySelector('.c-sidebar').classList.remove('c-sidebar--open');"></div>
+
+    <div class="c-container">
+        <aside class="c-sidebar">
+            <div class="c-sidebar__header">
+                System Orbit
+            </div>
+            <div class="c-sidebar__top">
+                {{ sidebar_html | safe }}
+            </div>
+            <div class="c-sidebar__bottom">
+                TERMINAL // <span>ACTIVE</span>
+            </div>
+        </aside>
+
+        <main class="c-main-content">
+            <div class="c-breadcrumbs">
+                <a href="/" style="color: inherit; text-decoration: none;">ADMIN</a>
+                {% set path_parts = request.path.strip('/').split('/') %}
+                {% for part in path_parts %}
+                    {% if part %}
+                        /
+                        {% if loop.last %}
+                            <span>{{ part | upper }}</span>
+                        {% else %}
+                            <a href="/{{ path_parts[:loop.index] | join('/') }}" style="color: inherit; text-decoration: none;">{{ part | upper }}</a>
+                        {% endif %}
+                    {% endif %}
+                {% else %}
+                    / <span>DASHBOARD</span>
+                {% endfor %}
+            </div>
+            
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                {% for message in messages %}
+                  <div class="flash-message">
+                      {{ message }}
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <footer class="c-footer">
+        &copy; 2026 ELTON BOEHNEN // 
+        <a href="https://github.com/boehnenelton">GH</a> // 
+        <a href="https://boehnenelton2024.pages.dev">SITE</a>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,11 @@
+<!-- Component: Blog Feed Card | v1.0 (also used for Standalone App cards) -->
+<div class="blog-card">
+    <div class="blog-thumb">
+        {% if featured_img %}<img src="{{ img_url }}">{% else %}IMG{% endif %}
+    </div>
+    <div class="blog-card-body">
+        <p class="blog-card-title"><a href="{{ slug }}/index.html">{{ title }}</a></p>
+        <p class="blog-card-excerpt">{{ excerpt }}</p>
+        {% if created_at %}<span class="blog-card-meta">{{ created_at }}</span>{% endif %}
+    </div>
+</div>

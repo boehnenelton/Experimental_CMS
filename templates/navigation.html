@@ -1,0 +1,40 @@
+{% extends "admin_base.html" %}
+{% block title %}Navigation | ExpCSS{% endblock %}
+
+{% block content %}
+<h1 class="emphasis" style="margin-bottom: 16px;">Site Navigation</h1>
+
+<div class="content-card" style="margin-bottom: 20px;">
+    <form method="POST" style="display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end;">
+        <div style="flex: 1; min-width: 140px;">
+            <label>Display Label</label>
+            <input name="label" placeholder="GitHub" required>
+        </div>
+        <div style="flex: 2; min-width: 220px;">
+            <label>Destination URL</label>
+            <input name="url" placeholder="https://..." required>
+        </div>
+        <div>
+            <button type="submit" class="btn-primary" style="margin-top: 20px;">ADD LINK</button>
+        </div>
+    </form>
+</div>
+
+<div class="content-card">
+    {% set columns = ['Label', 'Target URL'] %}
+    {% set rows = [] %}
+    {% for l in links %}
+        {% set actions = [
+            {'url': '/navigation/delete/' + l.label, 'label': 'Delete', 'class': 'u-text-primary', 'method': 'POST', 'confirm': 'Delete nav link "' + l.label + '"?'}
+        ] %}
+        {% do rows.append({
+            'label': l.label,
+            'url': l.url,
+            '_actions': actions
+        }) %}
+    {% endfor %}
+    {% with columns=columns, rows=rows %}
+        {% include "components/backend/Data-Table.html" %}
+    {% endwith %}
+</div>
+{% endblock %}

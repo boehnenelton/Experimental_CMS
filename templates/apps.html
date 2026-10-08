@@ -1,0 +1,77 @@
+{% extends "admin_base.html" %}
+
+{% block content %}
+<h1 class="emphasis" style="margin-bottom: 16px;">Standalone Apps</h1>
+<div style="margin-bottom: 20px;">
+    <button onclick="document.getElementById('import-modal').classList.remove('hidden')" class="btn-primary">+ IMPORT APP</button>
+</div>
+
+<div class="c-card-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px;">
+    {% for a in apps %}
+    <div class="c-card" style="padding: 0; overflow: hidden; display: flex; flex-direction: column;">
+        <div style="aspect-ratio: 16/9; background: var(--bg-alt); position: relative; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--border);">
+            {% if a.featured_img %}
+            <img src="/media/serve/{{ a.featured_img }}" style="width: 100%; height: 100%; object-fit: cover;">
+            {% else %}
+            <span style="width: 48px; height: 48px; color: var(--text-muted); opacity: 0.3;">⚙️</span>
+            {% endif %}
+            <div style="position: absolute; top: 12px; left: 12px;">
+                <span class="u-badge">{{ a.category_fk }}</span>
+            </div>
+        </div>
+        <div style="padding: 20px; flex: 1; display: flex; flex-direction: column;">
+            <h3 class="c-card__title" style="margin-bottom: 8px;">{{ a.name }}</h3>
+            <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px; flex: 1;">{{ a.description }}</p>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 16px; border-top: 1px solid var(--border-muted);">
+                <code style="font-size: 0.65rem; color: var(--text-muted);">{{ a.entry_file }}</code>
+                <form method="POST" action="/apps/delete/{{ a.app_uuid }}" onsubmit="return confirm('Delete app?')" style="display:contents;">
+                    <button type="submit" style="background:none; border:none; cursor:pointer; color: var(--primary); font-size: 0.7rem; font-weight: 800; text-transform: uppercase;">DELETE</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<style>
+    .hidden { display: none !important; }
+    .modal-backdrop {
+        position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+        display: flex; align-items: center; justify-content: center;
+        z-index: 2000; backdrop-filter: blur(4px);
+    }
+</style>
+
+<div id="import-modal" class="hidden modal-backdrop">
+    <div class="c-card" style="width: 100%; max-width: 500px;">
+        <h2 class="c-card__title">Import HTML App</h2>
+        <form method="POST" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 16px; margin-top: 24px;">
+            <input name="name" placeholder="App Name" style="width: 100%; padding: 12px; background: var(--bg-alt); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-main);" required>
+            <textarea name="description" placeholder="Description" style="width: 100%; padding: 12px; background: var(--bg-alt); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-main); min-height: 80px;"></textarea>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <select name="category" style="width: 100%; padding: 12px; background: var(--bg-alt); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-main);">
+                    {% for c in cats %}<option value="{{ c.category_slug }}">{{ c.category_name }}</option>{% endfor %}
+                </select>
+                <select name="featured_img" style="width: 100%; padding: 12px; background: var(--bg-alt); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-main);">
+                    <option value="">-- IMAGE --</option>
+                    {% for a in assets %}<option value="{{ a.filename }}">{{ a.filename }}</option>{% endfor %}
+                </select>
+            </div>
+            
+            <input name="entry_file" placeholder="Entry (e.g. index.html)" style="width: 100%; padding: 12px; background: var(--bg-alt); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-main);">
+            
+            <div style="margin-top: 4px;">
+                <label style="font-family: var(--font-mono); font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 8px;">Upload App (HTML or ZIP)</label>
+                <input type="file" name="app_file" style="width: 100%; font-size: 0.8rem; color: var(--text-main);" required>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 12px;">
+                <button type="submit" class="c-code-box__copy" style="flex: 1; padding: 16px;">IMPORT</button>
+                <button type="button" onclick="document.getElementById('import-modal').classList.add('hidden')" style="flex: 1; padding: 16px; background: var(--bg-alt); border: 1px solid var(--border); color: var(--text-main); font-weight: 800; cursor: pointer;">CANCEL</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

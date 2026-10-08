@@ -1,0 +1,59 @@
+{
+  "Format": "BEJSON",
+  "Format_Version": "104",
+  "Format_Creator": "Elton Boehnen",
+  "Parent_Hierarchy": "../104a.mfdb.bejson",
+  "Records_Type": [
+    "Category"
+  ],
+  "Fields": [
+    {
+      "name": "category_name",
+      "type": "string"
+    },
+    {
+      "name": "category_slug",
+      "type": "string"
+    },
+    {
+      "name": "description",
+      "type": "string"
+    },
+    {
+      "name": "feed_type",
+      "type": "string"
+    }
+  ],
+  "Values": [
+    [
+      "Uncategorized",
+      "uncategorized",
+      "General posts",
+      "blog"
+    ],
+    [
+      "BEJSON",
+      "BEJSON",
+      "A tabular format built off of JSON that relies on positional integrity.",
+      "article"
+    ],
+    [
+      "Articles",
+      "articles",
+      "Long-form written content",
+      "article"
+    ],
+    [
+      "News",
+      "news",
+      "Latest updates and announcements",
+      "news"
+    ],
+    [
+      "Gallery",
+      "gallery",
+      "Visual masonry gallery",
+      "masonry"
+    ]
+  ]
+}

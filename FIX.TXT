@@ -1,0 +1,839 @@
+
+
+the file was migrated f family
+
+fix errorsrom behtml into expcms
+
+Welcome to Termux!
+
+Docs:       https://termux.dev/d
+ocs
+Donate:     https://termux.dev/d
+onate
+Community:  https://termux.dev/c
+ommunity
+
+Working with packages:
+
+ - Search:  pkg search <query>
+ - Install: pkg install <package
+>
+ - Upgrade: pkg upgrade
+
+Subscribing to additional reposi
+tories:
+
+ - Root:    pkg install root-rep
+o
+ - X11:     pkg install x11-repo
+
+For fixing any repository issues
+,
+try 'termux-change-repo' command
+.
+
+Report issues at https://termux.
+dev/issues
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━
+            MAIN MENU           
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━
+  1) Launcher
+  (C) Camera
+  (T) Script Manager
+  ──────────────────────────
+  2) Exit
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━
+❯ Select: 2
+▶ Exiting.
+~ $ reposnew
+.../repos/new $ cd Management_CM
+S/
+.../new/Management_CMS $ ls
+104a.mfdb.bejson
+CLI
+Content
+Export
+Persist
+README.md
+Reports
+app.py
+bejson_project.json
+cms
+config
+data
+dev
+docs
+images
+lib
+requirements.txt
+scaffold_style.css
+scaffold_template.html
+templates
+.../new/Management_CMS $ python 
+app.py
+2026-10-03 02:09:15,162 [INFO] M
+anagement_CMS: Management_CMS v5
+.9.0 — http://127.0.0.1:5030  (a
+dmin token: /storage/emulated/0/
+Admin/repos/new/Management_CMS/c
+onfig/admin_token.txt)
+ * Serving Flask app 'app'
+ * Debug mode: off
+2026-10-03 02:09:15,209 [INFO] w
+erkzeug: WARNING: This is a deve
+lopment server. Do not use it in
+ a production deployment. Use a 
+production WSGI server instead.
+ * Running on http://127.0.0.1:5
+030
+2026-10-03 02:09:15,210 [INFO] w
+erkzeug: Press CTRL+C to quit
+2026-10-03 02:09:51,902 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:09:51] "GET / HTTP/1.1" 2
+00 -
+2026-10-03 02:09:52,156 [WARNING
+] Management_CMS: Failed admin-t
+oken attempt from 127.0.0.1 (1 i
+n the last 300s)
+2026-10-03 02:09:52,157 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:09:52] "GET /favicon.ico 
+HTTP/1.1" 401 -
+2026-10-03 02:10:18,963 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:10:18] "GET /api/auth/che
+ck HTTP/1.1" 200 -
+2026-10-03 02:10:18,989 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:10:18] "GET /api/pages HT
+TP/1.1" 200 -
+2026-10-03 02:10:19,071 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:10:19] "GET /api/page-typ
+es HTTP/1.1" 200 -
+2026-10-03 02:10:19,088 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:10:19] "GET /api/categori
+es?type=page HTTP/1.1" 200 -
+2026-10-03 02:10:25,600 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:10:25] "GET /api/todos HT
+TP/1.1" 200 -
+2026-10-03 02:10:25,601 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:10:25] "GET /api/notes HT
+TP/1.1" 200 -
+2026-10-03 02:10:25,603 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:10:25] "GET /api/links HT
+TP/1.1" 200 -
+2026-10-03 02:10:27,348 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:10:27] "GET /api/config H
+TTP/1.1" 200 -
+2026-10-03 02:10:27,360 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:10:27] "GET /api/about HT
+TP/1.1" 200 -
+2026-10-03 02:10:27,368 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:10:27] "GET /api/debug-no
+tes HTTP/1.1" 200 -
+2026-10-03 02:10:51,009 [ERROR] 
+app: Exception on /api/factory-r
+eset [POST]
+Traceback (most recent call last
+):
+  File "/data/data/com.termux/fi
+les/usr/lib/python3.14/shutil.py
+", line 922, in move
+    os.rename(src, real_dst)
+    ~~~~~~~~~^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No 
+such file or directory: '/storag
+e/emulated/0/Admin/repos/new/Man
+agement_CMS/config' -> '/storage
+/emulated/0/Admin/repos/new/Mana
+gement_CMS/Persist/factory_reset
+_backups/2026-10-03T09-10-40Z/co
+nfig'
+
+During handling of the above exc
+eption, another exception occurr
+ed:
+
+Traceback (most recent call last
+):
+  File "/data/data/com.termux/fi
+les/usr/lib/python3.14/site-pack
+ages/flask/app.py", line 1511, i
+n wsgi_app
+    response = self.full_dispatc
+h_request()
+  File "/data/data/com.termux/fi
+les/usr/lib/python3.14/site-pack
+ages/flask/app.py", line 919, in
+ full_dispatch_request
+    rv = self.handle_user_except
+ion(e)
+  File "/data/data/com.termux/fi
+les/usr/lib/python3.14/site-pack
+ages/flask/app.py", line 917, in
+ full_dispatch_request
+    rv = self.dispatch_request()
+  File "/data/data/com.termux/fi
+les/usr/lib/python3.14/site-pack
+ages/flask/app.py", line 902, in
+ dispatch_request
+    return self.ensure_sync(self
+.view_functions[rule.endpoint])(
+**view_args)  # type: ignore[no-
+any-return]
+           ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+^^^^^^^^^^^^
+  File "/storage/emulated/0/Admi
+n/repos/new/Management_CMS/app.p
+y", line 2518, in factory_reset
+    result = _factory_reset()
+  File "/storage/emulated/0/Admi
+n/repos/new/Management_CMS/app.p
+y", line 905, in _factory_reset
+    shutil.move(str(src), str(de
+st))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+^^^^
+  File "/data/data/com.termux/fi
+les/usr/lib/python3.14/shutil.py
+", line 942, in move
+    copy_function(src, real_dst)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/data/data/com.termux/fi
+les/usr/lib/python3.14/shutil.py
+", line 529, in copy2
+    copyfile(src, dst, follow_sy
+mlinks=follow_symlinks)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/data/com.termux/fi
+les/usr/lib/python3.14/shutil.py
+", line 313, in copyfile
+    with open(src, 'rb') as fsrc
+:
+         ~~~~^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No 
+such file or directory: '/storag
+e/emulated/0/Admin/repos/new/Man
+agement_CMS/config'
+2026-10-03 02:10:51,025 [ERROR] 
+app: Exception on /api/factory-r
+eset [POST]
+Traceback (most recent call last
+):
+  File "/data/data/com.termux/fi
+les/usr/lib/python3.14/shutil.py
+", line 922, in move
+    os.rename(src, real_dst)
+    ~~~~~~~~~^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No 
+such file or directory: '/storag
+e/emulated/0/Admin/repos/new/Man
+agement_CMS/Export' -> '/storage
+/emulated/0/Admin/repos/new/Mana
+gement_CMS/Persist/factory_reset
+_backups/2026-10-03T09-10-37Z/Ex
+port'
+
+During handling of the above exc
+eption, another exception occurr
+ed:
+
+Traceback (most recent call last
+):
+  File "/data/data/com.termux/fi
+les/usr/lib/python3.14/site-pack
+ages/flask/app.py", line 1511, i
+n wsgi_app
+    response = self.full_dispatc
+h_request()
+  File "/data/data/com.termux/fi
+les/usr/lib/python3.14/site-pack
+ages/flask/app.py", line 919, in
+ full_dispatch_request
+    rv = self.handle_user_except
+ion(e)
+  File "/data/data/com.termux/fi
+les/usr/lib/python3.14/site-pack
+ages/flask/app.py", line 917, in
+ full_dispatch_request
+    rv = self.dispatch_request()
+  File "/data/data/com.termux/fi
+les/usr/lib/python3.14/site-pack
+ages/flask/app.py", line 902, in
+ dispatch_request
+    return self.ensure_sync(self
+.view_functions[rule.endpoint])(
+**view_args)  # type: ignore[no-
+any-return]
+           ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+^^^^^^^^^^^^
+  File "/storage/emulated/0/Admi
+n/repos/new/Management_CMS/app.p
+y", line 2518, in factory_reset
+    result = _factory_reset()
+  File "/storage/emulated/0/Admi
+n/repos/new/Management_CMS/app.p
+y", line 905, in _factory_reset
+    shutil.move(str(src), str(de
+st))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+^^^^
+  File "/data/data/com.termux/fi
+les/usr/lib/python3.14/shutil.py
+", line 942, in move
+    copy_function(src, real_dst)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/data/data/com.termux/fi
+les/usr/lib/python3.14/shutil.py
+", line 529, in copy2
+    copyfile(src, dst, follow_sy
+mlinks=follow_symlinks)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/data/com.termux/fi
+les/usr/lib/python3.14/shutil.py
+", line 313, in copyfile
+    with open(src, 'rb') as fsrc
+:
+         ~~~~^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No 
+such file or directory: '/storag
+e/emulated/0/Admin/repos/new/Man
+agement_CMS/Export'
+2026-10-03 02:10:51,025 [ERROR] 
+app: Exception on /api/factory-r
+eset [POST]
+Traceback (most recent call last
+):
+  File "/data/data/com.termux/fi
+les/usr/lib/python3.14/shutil.py
+", line 922, in move
+    os.rename(src, real_dst)
+    ~~~~~~~~~^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No 
+such file or directory: '/storag
+e/emulated/0/Admin/repos/new/Man
+agement_CMS/Export' -> '/storage
+/emulated/0/Admin/repos/new/Mana
+gement_CMS/Persist/factory_reset
+_backups/2026-10-03T09-10-36Z/Ex
+port'
+
+During handling of the above exc
+eption, another exception occurr
+ed:
+
+Traceback (most recent call last
+):
+  File "/data/data/com.termux/fi
+les/usr/lib/python3.14/site-pack
+ages/flask/app.py", line 1511, i
+n wsgi_app
+    response = self.full_dispatc
+h_request()
+  File "/data/data/com.termux/fi
+les/usr/lib/python3.14/site-pack
+ages/flask/app.py", line 919, in
+ full_dispatch_request
+    rv = self.handle_user_except
+ion(e)
+  File "/data/data/com.termux/fi
+les/usr/lib/python3.14/site-pack
+ages/flask/app.py", line 917, in
+ full_dispatch_request
+    rv = self.dispatch_request()
+  File "/data/data/com.termux/fi
+les/usr/lib/python3.14/site-pack
+ages/flask/app.py", line 902, in
+ dispatch_request
+    return self.ensure_sync(self
+.view_functions[rule.endpoint])(
+**view_args)  # type: ignore[no-
+any-return]
+           ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+^^^^^^^^^^^^
+  File "/storage/emulated/0/Admi
+n/repos/new/Management_CMS/app.p
+y", line 2518, in factory_reset
+    result = _factory_reset()
+  File "/storage/emulated/0/Admi
+n/repos/new/Management_CMS/app.p
+y", line 905, in _factory_reset
+    shutil.move(str(src), str(de
+st))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+^^^^
+  File "/data/data/com.termux/fi
+les/usr/lib/python3.14/shutil.py
+", line 942, in move
+    copy_function(src, real_dst)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/data/data/com.termux/fi
+les/usr/lib/python3.14/shutil.py
+", line 529, in copy2
+    copyfile(src, dst, follow_sy
+mlinks=follow_symlinks)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/data/com.termux/fi
+les/usr/lib/python3.14/shutil.py
+", line 313, in copyfile
+    with open(src, 'rb') as fsrc
+:
+         ~~~~^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No 
+such file or directory: '/storag
+e/emulated/0/Admin/repos/new/Man
+agement_CMS/Export'
+2026-10-03 02:10:51,034 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:10:51] "POST /api/factory
+-reset HTTP/1.1" 500 -
+2026-10-03 02:10:51,042 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:10:51] "POST /api/factory
+-reset HTTP/1.1" 500 -
+2026-10-03 02:10:51,049 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:10:51] "POST /api/factory
+-reset HTTP/1.1" 500 -
+2026-10-03 02:10:54,211 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:10:54] "POST /api/factory
+-reset HTTP/1.1" 200 -
+2026-10-03 02:15:23,928 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:15:23] "GET / HTTP/1.1" 2
+00 -
+2026-10-03 02:15:24,160 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:15:24] "GET /api/pages HT
+TP/1.1" 200 -
+2026-10-03 02:15:24,196 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:15:24] "GET /favicon.ico 
+HTTP/1.1" 404 -
+2026-10-03 02:15:24,202 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:15:24] "GET /api/page-typ
+es HTTP/1.1" 200 -
+2026-10-03 02:15:24,229 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:15:24] "GET /api/categori
+es?type=page HTTP/1.1" 200 -
+2026-10-03 02:15:27,956 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:15:27] "GET /api/todos HT
+TP/1.1" 200 -
+2026-10-03 02:15:56,820 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:15:56] "POST /api/todos H
+TTP/1.1" 200 -
+2026-10-03 02:15:56,839 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:15:56] "GET /api/todos HT
+TP/1.1" 200 -
+2026-10-03 02:15:58,392 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:15:58] "GET /api/todos HT
+TP/1.1" 200 -
+2026-10-03 02:16:00,555 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:16:00] "PUT /api/todos/5f
+b81ef5-1937-490c-9a99-6334904c9e
+c6 HTTP/1.1" 200 -
+2026-10-03 02:16:00,574 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:16:00] "GET /api/todos HT
+TP/1.1" 200 -
+2026-10-03 02:16:01,746 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:16:01] "GET /api/task-cat
+egories HTTP/1.1" 200 -
+2026-10-03 02:16:22,748 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:16:22] "POST /api/task-ca
+tegories HTTP/1.1" 200 -
+2026-10-03 02:16:22,770 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:16:22] "GET /api/task-cat
+egories HTTP/1.1" 200 -
+2026-10-03 02:16:22,779 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:16:22] "GET /api/todos HT
+TP/1.1" 200 -
+2026-10-03 02:16:24,548 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:16:24] "GET /api/todos HT
+TP/1.1" 200 -
+2026-10-03 02:16:26,864 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:16:26] "PUT /api/todos/5f
+b81ef5-1937-490c-9a99-6334904c9e
+c6 HTTP/1.1" 200 -
+2026-10-03 02:16:26,882 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:16:26] "GET /api/todos HT
+TP/1.1" 200 -
+2026-10-03 02:16:36,112 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:16:36] "GET /api/notes HT
+TP/1.1" 200 -
+2026-10-03 02:16:39,047 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:16:39] "GET /api/note-cat
+egories HTTP/1.1" 200 -
+2026-10-03 02:16:47,554 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:16:47] "POST /api/note-ca
+tegories HTTP/1.1" 200 -
+2026-10-03 02:16:47,572 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:16:47] "GET /api/note-cat
+egories HTTP/1.1" 200 -
+2026-10-03 02:16:47,580 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:16:47] "GET /api/notes HT
+TP/1.1" 200 -
+2026-10-03 02:16:49,763 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:16:49] "GET /api/notes HT
+TP/1.1" 200 -
+2026-10-03 02:16:51,464 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:16:51] "GET /api/note-cat
+egories HTTP/1.1" 200 -
+2026-10-03 02:20:18,844 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:20:18] "POST /api/notes H
+TTP/1.1" 200 -
+2026-10-03 02:20:18,863 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:20:18] "GET /api/notes HT
+TP/1.1" 200 -
+2026-10-03 02:20:23,096 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:20:23] "GET /api/notes HT
+TP/1.1" 200 -
+2026-10-03 02:20:30,165 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:20:30] "PUT /api/notes/bd
+cd3d0a-4d4a-42fe-8e00-d3c8fc3e92
+8a HTTP/1.1" 200 -
+2026-10-03 02:20:30,184 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:20:30] "GET /api/notes HT
+TP/1.1" 200 -
+2026-10-03 02:22:21,969 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:22:21] "POST /api/notes H
+TTP/1.1" 200 -
+2026-10-03 02:22:21,989 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:22:21] "GET /api/notes HT
+TP/1.1" 200 -
+2026-10-03 02:25:20,271 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:25:20] "POST /api/notes H
+TTP/1.1" 200 -
+2026-10-03 02:25:20,289 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:25:20] "GET /api/notes HT
+TP/1.1" 200 -
+2026-10-03 02:25:50,799 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:25:50] "POST /api/notes H
+TTP/1.1" 200 -
+2026-10-03 02:25:50,819 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:25:50] "GET /api/notes HT
+TP/1.1" 200 -
+2026-10-03 02:26:19,784 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:26:19] "POST /api/notes H
+TTP/1.1" 200 -
+2026-10-03 02:26:19,804 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:26:19] "GET /api/notes HT
+TP/1.1" 200 -
+2026-10-03 02:26:24,133 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:26:24] "GET /api/config H
+TTP/1.1" 200 -
+2026-10-03 02:26:24,145 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:26:24] "GET /api/about HT
+TP/1.1" 200 -
+2026-10-03 02:26:24,152 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:26:24] "GET /api/debug-no
+tes HTTP/1.1" 200 -
+2026-10-03 02:27:25,388 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:27:25] "PUT /api/debug-no
+tes HTTP/1.1" 200 -
+2026-10-03 02:27:26,725 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:27:26] "POST /api/config 
+HTTP/1.1" 200 -
+2026-10-03 02:27:29,956 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:27:29] "GET /api/nav HTTP
+/1.1" 200 -
+2026-10-03 02:27:29,970 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:27:29] "GET /api/nav/tree
+ HTTP/1.1" 200 -
+2026-10-03 02:27:41,383 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:27:41] "GET /api/todos HT
+TP/1.1" 200 -
+2026-10-03 02:27:41,385 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:27:41] "GET /api/notes HT
+TP/1.1" 200 -
+2026-10-03 02:27:41,394 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:27:41] "GET /api/links HT
+TP/1.1" 200 -
+2026-10-03 02:27:44,060 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:27:44] "POST /api/build H
+TTP/1.1" 200 -
+2026-10-03 02:27:44,073 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:27:44] "GET /api/build/st
+atus HTTP/1.1" 200 -
+2026-10-03 02:27:44,789 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:27:44] "GET /api/build/st
+atus HTTP/1.1" 200 -
+2026-10-03 02:27:48,409 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:27:48] "GET /api/build/do
+wnload HTTP/1.1" 200 -
+2026-10-03 02:27:49,120 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:27:49] "GET /preview/inde
+x.html HTTP/1.1" 200 -
+2026-10-03 02:27:49,134 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:27:49] "GET /preview/inde
+x.html?t=1791019669122 HTTP/1.1"
+ 200 -
+2026-10-03 02:27:55,582 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:27:55] "GET /preview/inde
+x.html HTTP/1.1" 200 -
+2026-10-03 02:27:55,601 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:27:55] "GET /preview/inde
+x.html?t=1791019675585 HTTP/1.1"
+ 200 -
+2026-10-03 02:28:04,153 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:28:04] "GET /api/categori
+es?type=post HTTP/1.1" 200 -
+2026-10-03 02:28:04,165 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:28:04] "GET /api/categori
+es/tree?type=post HTTP/1.1" 200 
+-
+2026-10-03 02:28:07,492 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:28:07] "GET /api/posts?st
+atus=all HTTP/1.1" 200 -
+2026-10-03 02:28:07,501 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:28:07] "GET /api/post-sta
+tuses HTTP/1.1" 200 -
+2026-10-03 02:28:07,511 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:28:07] "GET /api/categori
+es?type=post HTTP/1.1" 200 -
+2026-10-03 02:28:07,524 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:28:07] "GET /api/tags HTT
+P/1.1" 200 -
+2026-10-03 02:28:09,473 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:28:09] "GET /api/pages HT
+TP/1.1" 200 -
+2026-10-03 02:28:09,483 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:28:09] "GET /api/page-typ
+es HTTP/1.1" 200 -
+2026-10-03 02:28:09,493 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:28:09] "GET /api/categori
+es?type=page HTTP/1.1" 200 -
+2026-10-03 02:28:11,488 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:28:11] "GET /api/config H
+TTP/1.1" 200 -
+2026-10-03 02:28:11,500 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:28:11] "GET /api/about HT
+TP/1.1" 200 -
+2026-10-03 02:28:11,511 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:28:11] "GET /api/debug-no
+tes HTTP/1.1" 200 -
+2026-10-03 02:28:13,905 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:28:13] "GET /api/links HT
+TP/1.1" 200 -
+2026-10-03 02:28:13,906 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:28:13] "GET /api/notes HT
+TP/1.1" 200 -
+2026-10-03 02:28:13,907 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:28:13] "GET /api/todos HT
+TP/1.1" 200 -
+2026-10-03 02:28:15,118 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:28:15] "GET /api/build/do
+wnload HTTP/1.1" 200 -
+2026-10-03 02:28:15,742 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:28:15] "GET /api/links HT
+TP/1.1" 200 -
+2026-10-03 02:28:15,743 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:28:15] "GET /api/todos HT
+TP/1.1" 200 -
+2026-10-03 02:28:15,751 [INFO] w
+erkzeug: 127.0.0.1 - - [03/Oct/2
+026 02:28:15] "GET /api/notes HT
+TP/1.1" 200 -
+
+
+cd..
+^C.../new/Management_CMS $
+.../new/Management_CMS $
+.../new/Management_CMS $ cd ..
+.../repos/new $ ls
+ Android_Explorer
+ BEHTML
+ BEHTML_PLAYER
+ BEJSONCMS117
+ BEJSON_CMS
+ BEJSON_Editor
+ BEJSON_Lists_JS
+ BEJSON_Text_Editor
+ BEJSON_Video_Player
+ BookCMS_Flask
+ CLI_AI
+ CLI_Chunker
+ CLI_Doc_Chunker
+ CLI_Github
+ CSS_Calibrator
+ Cli_Bookwriter
+ Cli_Image_Scanner_Suite-V1-PKG1
+00
+'Cognitive Core'
+ Cognitive_Core-v3
+ Doc_Chunker
+ Environment_Deployment_Tool
+ ExifDupeScanCompare
+ ExpCMS
+ Experimental_CMS
+ FSIDX_Suite
+ Flask_Gemini_Interactions-184
+ Flask_Gemini_Interactions_v1.11
+.4
+ Flask_Media_Kit
+ Folder_Search_Html3
+ Gemini_Interactions
+ Image-ProHasher-V9-PKG4
+ Image-ProHasher-V9-PKG4.zip
+ Image_Metascan
+ Image_Studio
+ JobMaker
+ Job_Runner
+ MFDB_Chunker-V630-PKG3
+ MFDB_Chunker-V631
+ MFDB_Chunker-V633-PKG1
+ MFDB_Diagrammer
+ MFDB_Diagrammer2
+ MFDB_Editor
+ MFDB_Profiles
+ Management_CMS
+ Media_Toolbox
+ Memory_Chat-Fork_Menstrial
+ Memory_Chat_Flask
+ Modern_BEJSON_Editor
+ NewAgent
+ NewAgent.zip
+ NewAgent112
+ OpenRouterCLI
+ Policy_Editor
+ Provocative_Chat
+ README.md
+ Storage_Utility_Suite
+ Task_Manager
+ TrackerTB
+ agycmd
+ cli_gh
+ update_versions.py
+ video_scanner
+.../repos/new $ cd Exper
+bash: cd: Exper: No such file or
+ directory
+.../repos/new $ cd Experimental_
+CMS/
+.../new/Experimental_CMS $ ls
+AGENTS.md          Lib_PY
+CHANGELOG.md       README.md
+CONTRIBUTING.md    audit.md
+Components         chunked5
+Data               dev
+EXPCMS.py          docs
+EXPCMS_Builder.py  static
+HTML_Skeletons     templates
+LICENSE
+.../new/Experimental_CMS $ pytho
+n EXPCMS
+python: can't open file '/storag
+e/emulated/0/Admin/repos/new/Exp
+erimental_CMS/EXPCMS': [Errno 2]
+ No such file or directory
+.../new/Experimental_CMS $ pytho
+n EXPCMS.py
+Traceback (most recent call last
+):
+  File "/storage/emulated/0/Admi
+n/repos/new/Experimental_CMS/EXP
+CMS.py", line 98, in <module>
+    from lib_bejson_ExpCMS_html 
+import COLOR, CSS_CORE
+  File "/storage/emulated/0/Admi
+n/repos/new/Experimental_CMS/Lib
+_PY/ExpCMS/lib_bejson_ExpCMS_htm
+l.py", line 876, in <module>
+    HTML_SKELETON_BRUTAL = HTML_
+SKELETON
+                           ^^^^^
+^^^^^^^^
+NameError: name 'HTML_SKELETON' 
+is not defined
+.../new/Experimental_CMS $

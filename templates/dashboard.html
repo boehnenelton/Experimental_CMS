@@ -1,0 +1,45 @@
+{% extends "admin_base.html" %}
+
+{% block content %}
+<div class="c-stats-dashboard">
+    <h1 class="emphasis">System Analytics</h1>
+    <div class="content-card">
+        <div style="color: var(--text-muted);">Real-time metrics from the unified MFDB persistence engine.</div>
+    </div>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value">{{ g_stats.entity_count }}</div>
+            <div class="stat-label">Global Entities</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ c_stats.entity_count }}</div>
+            <div class="stat-label">Content Entities</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ expcms_version }}</div>
+            <div class="stat-label">CMS Version</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">MFDB</div>
+            <div class="stat-label">Data Engine</div>
+        </div>
+    </div>
+
+    <div style="font-weight:600; margin-bottom:12px; margin-top:32px; color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px;">Quick Actions</div>
+    <div class="stats-grid">
+        <a href="/new" class="stat-card" style="text-decoration: none;">
+            <div class="stat-value"><span style="width: 32px; height: 32px;">＋</span></div>
+            <div class="stat-label">New Page</div>
+        </a>
+        <a href="/media" class="stat-card" style="text-decoration: none;">
+            <div class="stat-value"><span style="width: 32px; height: 32px;">🖼</span></div>
+            <div class="stat-label">Library</div>
+        </a>
+        <a href="/categories" class="stat-card" style="text-decoration: none;">
+            <div class="stat-value"><span style="width: 32px; height: 32px;">📁</span></div>
+            <div class="stat-label">Add Category</div>
+        </a>
+    </div>
+</div>
+{% endblock %}

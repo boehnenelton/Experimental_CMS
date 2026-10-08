@@ -1,0 +1,175 @@
+{% extends "admin_base.html" %}
+
+{% block title %}{{ 'Edit: ' + p.title if p.page_uuid else 'New Page' }} | ExpCSS{% endblock %}
+
+{% block content %}
+<div class="c-bejson-form" container-type="inline-size">
+
+    <h1 class="emphasis" style="margin-bottom: 8px;">Content Architect</h1>
+    <div class="content-card" style="margin-bottom: 20px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+            <span class="u-text-muted" style="font-size: 0.85rem;">
+                {{ 'Editing existing relational record.' if p.page_uuid else 'Creating new atomic page entry.' }}
+                Status: <span class="emphasis">Awaiting Sync</span>
+            </span>
+            <div style="display: flex; gap: 8px;">
+                {% if p.page_uuid %}
+                <a href="/preview/{{ p.page_uuid }}" target="_blank" class="c-bejson-form__btn-reset" style="text-decoration: none; padding: 8px 16px; font-size: 0.8rem;">
+                    PREVIEW
+                </a>
+                {% endif %}
+                <button form="editor-form" type="submit" class="c-bejson-form__btn-submit" style="padding: 8px 16px; font-size: 0.8rem;">
+                    COMMIT DATA
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <form id="editor-form" action="/save" method="POST" class="c-bejson-form__form">
+        <input type="hidden" name="page_uuid" value="{{ p.page_uuid }}">
+
+        <div class="c-bejson-form__field">
+            <label class="c-bejson-form__label">Title <span class="c-bejson-form__type">string</span></label>
+            <input name="title" value="{{ p.title }}" class="c-bejson-form__input" placeholder="Enter Page Title" required>
+        </div>
+
+        <div class="c-bejson-form__field">
+            <label class="c-bejson-form__label">Category <span class="c-bejson-form__type">fk</span></label>
+            <select name="category_fk" class="c-bejson-form__input">
+                {% for cat in cats %}
+                <option value="{{ cat.category_slug }}" {% if cat.category_slug == p.category_fk or (not p.category_fk and cat.category_slug == 'uncategorized') %}selected{% endif %}>
+                    {{ cat.category_name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="c-bejson-form__field">
+            <label class="c-bejson-form__label">Author <span class="c-bejson-form__type">fk</span></label>
+            <select name="author_fk" class="c-bejson-form__input">
+                <option value="">— None —</option>
+                {% for a in authors %}
+                <option value="{{ a.author_uuid }}" {% if a.author_uuid == p.author_fk %}selected{% endif %}>
+                    {{ a.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="c-bejson-form__field">
+            <label class="c-bejson-form__label">Page Type <span class="c-bejson-form__type">enum</span></label>
+            <select name="page_type" class="c-bejson-form__input">
+                <option value="article" {% if p.page_type == 'article' %}selected{% endif %}>Article</option>
+                <option value="gallery" {% if p.page_type == 'gallery' %}selected{% endif %}>Gallery</option>
+                <option value="product" {% if p.page_type == 'product' %}selected{% endif %}>Product</option>
+                <option value="video" {% if p.page_type == 'video' %}selected{% endif %}>Video</option>
+                <option value="pdf-viewer" {% if p.page_type == 'pdf-viewer' %}selected{% endif %}>PDF Viewer</option>
+                <option value="source-code" {% if p.page_type == 'source-code' %}selected{% endif %}>Source Code</option>
+            </select>
+        </div>
+
+        <div class="c-bejson-form__field">
+            <label class="c-bejson-form__label">Featured Image <span class="c-bejson-form__type">asset_fk</span></label>
+            <select name="featured_img" class="c-bejson-form__input">
+                <option value="">— None —</option>
+                {% for a in assets %}
+                {% if a.mime_type and a.mime_type.startswith('image') %}
+                <option value="{{ a.filename }}" {% if a.filename == p.featured_img %}selected{% endif %}>
+                    {{ a.original_name }}
+                </option>
+                {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="c-bejson-form__field">
+            <label class="c-bejson-form__label">Video URL <span class="c-bejson-form__type">string</span></label>
+            <input name="video_url" value="{{ p.video_url }}" class="c-bejson-form__input" placeholder="https://www.youtube.com/embed/...">
+        </div>
+
+        <!-- BUGFIX (2026-08-11, audit M9): save_page() has handled the
+             video/pdf-viewer/source-code page types since they were added,
+             but this editor never offered them in the dropdown (now
+             fixed above) and had no PDF URL / Source Files input at all,
+             so those two types were completely unreachable from the UI.
+             Matches the existing always-visible pattern used for
+             Video URL rather than adding type-conditional JS show/hide. -->
+        <div class="c-bejson-form__field">
+            <label class="c-bejson-form__label">PDF URL <span class="c-bejson-form__type">string</span></label>
+            <input name="pdf_url" value="{{ p.pdf_url }}" class="c-bejson-form__input" placeholder="/media/serve/document.pdf">
+        </div>
+
+        <div class="c-bejson-form__field">
+            <label class="c-bejson-form__label">Source Files (JSON) <span class="c-bejson-form__type">source-code</span></label>
+            <textarea name="source_files_json" class="c-bejson-form__textarea" style="height: 120px; font-family: var(--font-mono); font-size: 0.8rem;"
+                      placeholder='[{"filename": "main.py", "language": "python", "code": "..."}]'>{{ p.source_files | tojson if p.source_files else '' }}</textarea>
+        </div>
+
+        <div class="c-bejson-form__field">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+                <label class="c-bejson-form__label">Body HTML <span class="c-bejson-form__type">html</span></label>
+                <button type="button" onclick="openWidgetPicker()" class="c-bejson-form__btn-reset" style="font-size: 0.75rem; padding: 6px 12px;">
+                    + Insert Widget
+                </button>
+            </div>
+            <textarea name="html_body" id="html-body-field" class="c-bejson-form__textarea"
+                      style="height: 400px; font-family: var(--font-mono); font-size: 0.8rem;">{{ p.html_body }}</textarea>
+        </div>
+
+        <div class="c-bejson-form__actions">
+            <button type="submit" class="c-bejson-form__btn-submit">COMMIT DATA</button>
+            <a href="/pages" class="c-bejson-form__btn-reset" style="text-decoration: none; display: inline-flex; align-items: center;">
+                CANCEL
+            </a>
+        </div>
+    </form>
+
+    <!-- Widget Picker Modal -->
+    <div id="widget-picker-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:500; align-items:center; justify-content:center; padding: 20px;">
+        <div style="background: var(--bg-page); border: 1px solid var(--border); border-radius: 10px; max-width: 560px; width: 100%; max-height: 85vh; overflow-y: auto; padding: 20px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 16px;">
+                <h2 style="margin:0;">Insert Widget</h2>
+                <button type="button" onclick="closeWidgetPicker()" class="c-bejson-form__btn-reset" style="font-size:0.75rem; padding: 4px 10px;">✕ Close</button>
+            </div>
+            <div id="widget-picker-body">
+                <p class="u-text-muted">Loading widgets...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function openWidgetPicker() {
+        document.getElementById('widget-picker-modal').style.display = 'flex';
+        fetch('/widgets/picker')
+            .then(r => r.text())
+            .then(html => {
+                document.getElementById('widget-picker-body').innerHTML = html;
+                document.querySelectorAll('.widget-insert-form').forEach(form => {
+                    form.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        const widgetKey = form.dataset.widgetKey;
+                        const formData = new FormData(form);
+                        fetch('/widgets/render/' + widgetKey, { method: 'POST', body: formData })
+                            .then(r => r.text())
+                            .then(snippet => {
+                                const textarea = document.getElementById('html-body-field');
+                                const pos = textarea.selectionStart || textarea.value.length;
+                                const before = textarea.value.substring(0, pos);
+                                const after = textarea.value.substring(pos);
+                                textarea.value = before + '\n' + snippet + '\n' + after;
+                                closeWidgetPicker();
+                            })
+                            .catch(err => alert('Widget render failed: ' + err));
+                    });
+                });
+            })
+            .catch(() => {
+                document.getElementById('widget-picker-body').innerHTML = '<p style="color:var(--primary);">Failed to load widgets.</p>';
+            });
+    }
+    function closeWidgetPicker() {
+        document.getElementById('widget-picker-modal').style.display = 'none';
+    }
+    </script>
+</div>
+{% endblock %}
