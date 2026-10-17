@@ -4,7 +4,7 @@
   "Format_Creator": "Elton Boehnen",
   "Project_Name": "Experimental_CMS",
   "Project_Version": "3.11.0",
-  "Package_Version": "31",
+  "Package_Version": "32",
   "Schema_Version": "1.0.2",
   "Records_Type": [
     "RootPackage"
@@ -94,11 +94,18 @@
       "NEW-H1: do_unchunk() (lib_bejson_ExpCMS_mfdb_chunker_v6.py) now routes restored file paths through bejson_safe_join() before writing - rel_path comes from restored entity row data, not zip member names, so the existing per-member zip guard never covered it; a crafted backup could have written outside the unchunk staging dir via a file_path like \"../../../anything\". NEW-H2: preview server (/srv/start, EXPCMS.py) was hardcoded to bind 0.0.0.0; now env-driven via EXPCMS_PREVIEW_HOST with a loopback default and a loud warning if overridden, mirroring the existing EXPCMS_HOST/H1 pattern. NEW-H3: /apps zip-import entry_file (EXPCMS.py) is now run through secure_filename() and required to exist in the extracted zip or the import is rejected; EXPCMS_Builder.py additionally html.escape()s entry_file before interpolating it into the built app-page iframe src and adds sandbox=\"allow-scripts allow-same-origin\" to that iframe. NEW-M5: quarantined Lib_PY/Core/cli/CLI_Doc_Chunker/update-libs.txt - an embedded instruction addressed to an AI/human agent referencing a cracked folder, i.e. a social-engineering/prompt-injection artifact. Not acted on; moved to docs/quarantine/ with provenance note. FLAGGED, NOT FIXED (needs explicit go-ahead per Core library-immutability policy): the same rel_path/no-boundary-check pattern as NEW-H1 exists in Lib_PY/Core/lib_bejson_Core_bejson_chunking.py (bejson_core_chunking_unchunk_chunked_104() and a second unchunk site around line 789, likely resurrect_file/mount) - this is a Core-family lib shared across other apps, so it was not modified this pass. This is Phase 1 of the 2026-08-18 audit remediation plan; Phase 2 (NEW-M1/M2/M3/M4, robustness) targeted for pkg30.",
       "2026-08-18",
       "01-00_2026-08"
+    ],
+    [
+      "3.11.0",
+      "pkg32 documentation reorganization and professional README",
+      "Reorganized root documentation: migrated AGENTS.md, audit notes, security notes, and cleanup logs into dev/; moved CHANGELOG.md, CONTRIBUTING.md, and SECURITY.md into docs/. Authored authoritative root README.md with comprehensive feature matrix, TOC, architecture diagrams, and usage guide.",
+      "2026-10-17",
+      "08-20_2026-10"
     ]
   ],
   "Project_Description": "Schema template for tracking project file. Belongs in the root of each project or package.",
   "Project_GUID": "0188f906-4aef-445a-b4be-5db7398efc8f",
-  "Project_Modified_Date": "2026-09-30T07:59:50Z",
-  "Versioned_UUID": "af6abdbd-f8d7-46c5-a6f1-c8d2934d4479",
-  "Archive_Filename": "Experimental_CMS-V3110-PKG31.zip"
+  "Project_Modified_Date": "2026-10-17T08:20:00Z",
+  "Versioned_UUID": "73f46b5a-4201-4afc-9b06-09a8dded7cea",
+  "Archive_Filename": "Experimental_CMS-V3110-PKG32.zip"
 }
