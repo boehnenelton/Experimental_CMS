@@ -36,9 +36,8 @@
         <div class="c-bejson-form__field">
             <label class="c-bejson-form__label">Category <span class="c-bejson-form__type">fk</span></label>
             <select name="category_fk" class="c-bejson-form__input">
-                <option value="">— None —</option>
                 {% for cat in cats %}
-                <option value="{{ cat.category_slug }}" {% if cat.category_slug == p.category_fk %}selected{% endif %}>
+                <option value="{{ cat.category_slug }}" {% if cat.category_slug == p.category_fk or (not p.category_fk and cat.category_slug == 'uncategorized') %}selected{% endif %}>
                     {{ cat.category_name }}
                 </option>
                 {% endfor %}
@@ -63,6 +62,9 @@
                 <option value="article" {% if p.page_type == 'article' %}selected{% endif %}>Article</option>
                 <option value="gallery" {% if p.page_type == 'gallery' %}selected{% endif %}>Gallery</option>
                 <option value="product" {% if p.page_type == 'product' %}selected{% endif %}>Product</option>
+                <option value="video" {% if p.page_type == 'video' %}selected{% endif %}>Video</option>
+                <option value="pdf-viewer" {% if p.page_type == 'pdf-viewer' %}selected{% endif %}>PDF Viewer</option>
+                <option value="source-code" {% if p.page_type == 'source-code' %}selected{% endif %}>Source Code</option>
             </select>
         </div>
 
@@ -71,9 +73,9 @@
             <select name="featured_img" class="c-bejson-form__input">
                 <option value="">— None —</option>
                 {% for a in assets %}
-                {% if a.content_type and a.content_type.startswith('image') %}
+                {% if a.mime_type and a.mime_type.startswith('image') %}
                 <option value="{{ a.filename }}" {% if a.filename == p.featured_img %}selected{% endif %}>
-                    {{ a.original_filename }}
+                    {{ a.original_name }}
                 </option>
                 {% endif %}
                 {% endfor %}
@@ -83,6 +85,24 @@
         <div class="c-bejson-form__field">
             <label class="c-bejson-form__label">Video URL <span class="c-bejson-form__type">string</span></label>
             <input name="video_url" value="{{ p.video_url }}" class="c-bejson-form__input" placeholder="https://www.youtube.com/embed/...">
+        </div>
+
+        <!-- BUGFIX (2026-08-11, audit M9): save_page() has handled the
+             video/pdf-viewer/source-code page types since they were added,
+             but this editor never offered them in the dropdown (now
+             fixed above) and had no PDF URL / Source Files input at all,
+             so those two types were completely unreachable from the UI.
+             Matches the existing always-visible pattern used for
+             Video URL rather than adding type-conditional JS show/hide. -->
+        <div class="c-bejson-form__field">
+            <label class="c-bejson-form__label">PDF URL <span class="c-bejson-form__type">string</span></label>
+            <input name="pdf_url" value="{{ p.pdf_url }}" class="c-bejson-form__input" placeholder="/media/serve/document.pdf">
+        </div>
+
+        <div class="c-bejson-form__field">
+            <label class="c-bejson-form__label">Source Files (JSON) <span class="c-bejson-form__type">source-code</span></label>
+            <textarea name="source_files_json" class="c-bejson-form__textarea" style="height: 120px; font-family: var(--font-mono); font-size: 0.8rem;"
+                      placeholder='[{"filename": "main.py", "language": "python", "code": "..."}]'>{{ p.source_files | tojson if p.source_files else '' }}</textarea>
         </div>
 
         <div class="c-bejson-form__field">

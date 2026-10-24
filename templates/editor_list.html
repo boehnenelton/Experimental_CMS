@@ -12,7 +12,7 @@
     {% for r in pages_doc.Values %}
         {% set actions = [
             {'url': '/edit/' + r[0], 'label': 'Edit', 'class': 'u-text-muted'},
-            {'url': '/pages/delete/' + r[0], 'label': 'Delete', 'class': 'u-text-primary'}
+            {'url': '/pages/delete/' + r[0], 'label': 'Delete', 'class': 'u-text-primary', 'method': 'POST', 'confirm': 'Delete "' + (r[1] or 'this page') + '"? This cannot be undone.'}
         ] %}
         {% do rows.append({
             'title': r[1],
@@ -23,7 +23,7 @@
         }) %}
     {% endfor %}
 
-    {% with columns=columns, rows=rows %}
+    {% with columns=columns, rows=rows, actions_position='left' %}
         {% include "components/backend/Data-Table.html" %}
     {% endwith %}
 </div>
@@ -36,7 +36,7 @@
     .c-bejson-table__td { padding: 12px; border-bottom: 1px solid #111; font-size: 0.85rem; }
     .c-bejson-table__tr:hover { background: #151515; }
     .c-bejson-table__btn { background: #222; border: 1px solid #333; color: #fff; padding: 4px 8px; border-radius: 2px; cursor: pointer; font-size: 0.7rem; }
-    .c-bejson-table__btn:hover { border-color: var(--accent); color: var(--accent); }
+    .c-bejson-table__btn:hover { border-color: var(--primary); color: var(--primary); }
     .c-input { background: #111; border: 1px solid #333; color: #fff; padding: 4px; border-radius: 4px; }
 </style>
 {% endblock %}

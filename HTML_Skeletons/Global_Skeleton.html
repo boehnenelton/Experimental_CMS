@@ -22,6 +22,13 @@
             --radius:       6px;
             --sidebar-w:    280px;
             --header-h:     56px;
+
+            /* Aliases so shared admin components embedded in page content
+               (e.g. the BEJSON table/combobox viewer) resolve to real colors
+               here instead of falling back to unstyled defaults. */
+            --bg-page:      var(--surface);
+            --bg-alt:       var(--surface-2);
+            --text-main:    var(--text);
         }
 
         /* ── Reset ───────────────────────────────────────── */
@@ -336,6 +343,9 @@
         .c-footer-links ul { list-style: none; padding: 0; }
         .c-footer-links a { color: var(--text-muted); text-decoration: none; }
         .c-footer-links a:hover { color: var(--primary); }
+
+        /* ── Shared component styles (widgets embeddable in page content) ── */
+        {{ shared_component_css | safe }}
     </style>
 </head>
 <body>
@@ -345,7 +355,7 @@
         </button>
         <div class="site-header__logo">{{ site_title }}<span>.</span></div>
         <div class="site-header__spacer"></div>
-        <div class="site-header__meta">EXPCMS v3.1</div>
+        <div class="site-header__meta">EXPCMS v{{ expcms_version }}</div>
     </header>
 
     <div class="sidebar-overlay" id="overlay"></div>

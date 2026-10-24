@@ -25,7 +25,9 @@
             
             <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 16px; border-top: 1px solid var(--border-muted);">
                 <code style="font-size: 0.65rem; color: var(--text-muted);">{{ a.entry_file }}</code>
-                <a href="/apps/delete/{{ a.app_uuid }}" style="color: var(--primary); font-size: 0.7rem; font-weight: 800; text-transform: uppercase;" onclick="return confirm('Delete app?')">DELETE</a>
+                <form method="POST" action="/apps/delete/{{ a.app_uuid }}" onsubmit="return confirm('Delete app?')" style="display:contents;">
+                    <button type="submit" style="background:none; border:none; cursor:pointer; color: var(--primary); font-size: 0.7rem; font-weight: 800; text-transform: uppercase;">DELETE</button>
+                </form>
             </div>
         </div>
     </div>
@@ -50,7 +52,7 @@
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                 <select name="category" style="width: 100%; padding: 12px; background: var(--bg-alt); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-main);">
-                    {% for c in cats %}<option value="{{ c.slug }}">{{ c.name }}</option>{% endfor %}
+                    {% for c in cats %}<option value="{{ c.category_slug }}">{{ c.category_name }}</option>{% endfor %}
                 </select>
                 <select name="featured_img" style="width: 100%; padding: 12px; background: var(--bg-alt); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-main);">
                     <option value="">-- IMAGE --</option>

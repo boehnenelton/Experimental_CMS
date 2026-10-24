@@ -11,7 +11,7 @@
         
         <form action="/backup/create" method="POST" style="display: flex; gap: 12px;">
             <input type="text" name="changelog" placeholder="Backup description / changelog..." class="c-input" style="flex: 1;">
-            <button type="submit" style="background: var(--accent); color: #fff; border: none; padding: 10px 24px; border-radius: 4px; font-weight: bold; cursor: pointer;">CREATE BACKUP</button>
+            <button type="submit" style="background: var(--primary); color: #fff; border: none; padding: 10px 24px; border-radius: 4px; font-weight: bold; cursor: pointer;">CREATE BACKUP</button>
         </form>
     </div>
 
@@ -21,7 +21,7 @@
             <div class="stat-card" style="text-align: left; padding: 24px;">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
                     <div>
-                        <div style="font-weight: 800; color: var(--accent); font-size: 0.9rem;">{{ b.filename }}</div>
+                        <div style="font-weight: 800; color: var(--primary); font-size: 0.9rem;">{{ b.filename }}</div>
                         <div style="font-size: 0.7rem; color: var(--text-muted);">{{ b.mtime }} | {{ b.size_kb }} KB</div>
                     </div>
                     <span style="color: var(--border);">📦</span>
@@ -46,8 +46,8 @@
 
 <style>
     .c-input { background: #111; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 6px; outline: none; }
-    .c-input:focus { border-color: var(--accent); }
+    .c-input:focus { border-color: var(--primary); }
     .c-bejson-table__btn { background: #222; border: 1px solid #333; color: #fff; padding: 8px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-weight: bold; }
-    .c-bejson-table__btn:hover { border-color: var(--accent); }
+    .c-bejson-table__btn:hover { border-color: var(--primary); }
 </style>
 {% endblock %}

@@ -1,38 +1,106 @@
-# RELATIONAL_GUID: 2e3e1761-df04-42a1-b64f-27b708eca287
-# VERSION: v3.5.0
+# RELATIONAL_GUID: 26838dbe-6b80-4528-afd4-4afa0ce31c09
+# VERSION: v3.11.0
 # CREDITS: Elton Boehnen (github.com/boehnenelton)
 # FILE: EXPCMS.py
-# DATE: 2026-07-10
+# DATE: 2026-08-18
+# CHANGE (2026-08-18): pkg29 audit-fix pass, Phase 1 (security). NEW-H2:
+#   preview server (/srv/start) was hardcoded to bind "" (0.0.0.0) - H1
+#   (pkg25) locked the admin app to loopback but missed this one, which
+#   serves the built site + hosted apps with no auth. Now env-driven via
+#   EXPCMS_PREVIEW_HOST, loopback default, warns loudly if overridden.
+#   NEW-H3: /apps zip-import entry_file was accepted from the form with
+#   no validation against the zip's actual contents, then interpolated
+#   raw into an unescaped iframe src on every built app page (fixed on
+#   the builder side too, see EXPCMS_Builder.py changelog). Now run
+#   through secure_filename() and required to exist in the extracted
+#   zip, or the import is rejected.
+# CHANGE (2026-08-18): pkg28 audit-fix pass, Phase 0 (NEW-C1 regression
+#   fix). preview_page()'s page_data.get("page_slug") or ...get("slug")
+#   fallback removed - "page_slug" was never a real field, it only
+#   existed because of the same M6 bug fixed in
+#   lib_bejson_ExpCMS_cms_mfdb.py this pass. Now reads "slug" directly.
+# CHANGE (2026-08-12): pkg27 audit-fix pass, part 3 (L1-L14 from the full
+#   audit, all now addressed except L12/L13 which the audit itself flagged
+#   as informational-only, no fix needed). L1: hardcoded Flask secret_key
+#   replaced with env-var/random fallback. L2: malformed source_files_json
+#   now flashes an error instead of a raw 500. L3: zip-import folder
+#   labels sanitized. L4: /preview/<uuid> computes its built path directly
+#   instead of scanning every built HTML file per request. L5:
+#   static_folder no longer points at templates/ (was serving raw Jinja
+#   source at /static/*.html). L6: removed the dead /assets/<path> route.
+#   L7: hardcoded stale "v3.1" strings replaced with a live
+#   expcms_version pulled from .bejson_project.json. L11:
+#   categories()/pages() now resolve entity file paths via the manifest
+#   instead of hardcoded 'data/category.bejson'/'data/page.bejson'.
+#   See EXPCMS_Builder.py changelog for L8/L9/L10.
+# CHANGE (2026-08-12): pkg26 audit-fix pass, part 2 (M2-M9 from the full
+#   audit; C1/C2/H1-H6/M1 were pkg25). M2: backup/restore now target the
+#   real MFDB workspace instead of the built site (see chunker_wrapper.py
+#   changelog); /backup/restore now re-mounts and rebuilds automatically
+#   on success. M4: factory_reset and repack converted to POST-only routes
+#   with form-submit buttons (was GET links, CSRF-triggerable via <img>).
+#   See templates/*.html and lib_bejson_ExpCMS_cms_mfdb.py changelogs for
+#   M3/M6/M7/M8/M9/M4 (other 8 routes)/H2-followup-original_name fixes.
+# CHANGE (2026-08-11): pkg25 audit-fix pass (see docs/security-notes.md
+#   for the full audit trace). C1: /apps zip import now routes through
+#   safe_extract_zip (per-member bejson_safe_join check) plus a member
+#   count/size guard, instead of raw zipfile.extractall(). H1: app.run()
+#   now defaults to 127.0.0.1 with debug off; host/port/debug are
+#   env-driven (EXPCMS_HOST/EXPCMS_PORT/EXPCMS_DEBUG). H3: /apps route
+#   reads request.form.get('category') to match the actual form field
+#   name (was reading 'category_fk', always None).
+# CHANGE (2026-08-08): pkg24 library reconciliation against updated
+#   libraries.zip. Dropped "CMS" from the Lib_PY family sys.path list and
+#   switched the MFDB_CMS_Manager import from lib_bejson_CMS_cms_mfdb (CMS
+#   family - belongs to a different CMS product) to lib_bejson_ExpCMS_cms_mfdb
+#   (ExpCMS family - relocated file, same class/logic). Experimental CMS no
+#   longer depends on the CMS family at all.
+# CHANGE (2026-08-05): pkg23 database audit. Removed the separate
+#   cms.initialize_system() call before mount_system() at startup -
+#   mount_system() now needs to see whether the manifest existed BEFORE
+#   it ran, to tell a true fresh install apart from live data. Calling
+#   both in sequence made every boot look like "live data already
+#   exists," which (combined with the pkg21 mount_system() rewrite)
+#   silently skipped creating the initial backup archive on fresh
+#   installs. mount_system() calls initialize_system() internally at
+#   the correct point now - see lib_bejson_CMS_cms_mfdb.py.
 
 """
 Experimental CMS v3.1 — Unified Administrative Dashboard
 Description: Flask-based admin dashboard and MFDB content manager for the ExpCMS static site engine.
-             Isolated from production BEJSON CMS via the Lib_EXPCMS library boundary.
+             Built on the canonical Lib_PY family libraries (Core, HTML, ExpCMS),
+             replacing the retired Lib_EXPCMS frozen isolation copies as of 2026-07-31.
 """
 import os
 import sys
 import uuid
+import shutil
 import collections
 import threading
 import http.server
 import socketserver
 import json
+from pathlib import Path
 from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory
 from werkzeug.utils import secure_filename
 
-# Add Lib to path
+# Add Lib to path — migrated off the frozen Lib_EXPCMS isolation copies onto
+# the canonical Lib_PY family folders per APP_LIBRARY_PUSH_LIST.md (2026-07-31)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-LIB_DIR = os.path.join(BASE_DIR, "Lib_EXPCMS")
-if LIB_DIR not in sys.path:
-    sys.path.append(LIB_DIR)
+LIB_PY_DIR = os.path.join(BASE_DIR, "Lib_PY")
+for _family in ("Core", "HTML", "ExpCMS"):
+    _family_dir = os.path.join(LIB_PY_DIR, _family)
+    if _family_dir not in sys.path:
+        sys.path.append(_family_dir)
 
-from lib_expcms_mfdb import MFDB_CMS_Manager
-from lib_expcms_widgets import WIDGETS, render_widget
-from lib_bejson_html3_skeletons import COLOR, CSS_CORE
-from lib_html3_body import html_card, html_stats_bar, html_code_box, html_brutal_table
-from lib_html3_tables import html_table
-from lib_html3_widgets import html_widget, html_info_box
-from lib_expcms_chunker_wrapper import CMS_Chunker_Wrapper
+from lib_bejson_ExpCMS_cms_mfdb import MFDB_CMS_Manager
+from lib_bejson_ExpCMS_widgets import WIDGETS, render_widget
+from lib_bejson_ExpCMS_html import COLOR, CSS_CORE
+from lib_bejson_ExpCMS_html import html_card, html_stats_bar, html_code_box, html_brutal_table
+from lib_bejson_ExpCMS_html import html_table
+from lib_bejson_ExpCMS_html import html_widget, html_info_box
+from lib_bejson_ExpCMS_chunker_wrapper import CMS_Chunker_Wrapper
+from lib_bejson_ExpCMS_mfdb_chunker_v6 import safe_extract_zip
 import lib_bejson_Core_mfdb_core as MFDBCore
 
 # --- Flask App Initialization ---
@@ -40,11 +108,37 @@ import mimetypes
 mimetypes.add_type('text/css', '.css')
 mimetypes.add_type('application/javascript', '.js')
 
-app = Flask(__name__, 
-            static_folder=os.path.join(BASE_DIR, "templates"),
+app = Flask(__name__,
+            # BUGFIX (2026-08-12, audit L5): this pointed static_folder
+            # directly at templates/, so every raw .html template (Jinja
+            # source, admin-only markup/logic) was servable verbatim at
+            # /static/<name>.html - nothing in this app actually
+            # references /static/ at all, so it was pure unintended
+            # exposure. Points at a real (currently empty) static/ dir.
+            static_folder=os.path.join(BASE_DIR, "static"),
             static_url_path='/static')
-app.secret_key = 'expcss-unified-v2-secret'
+# BUGFIX (2026-08-12, audit L1): hardcoded secret_key means every
+# install shares the same Flask session-signing key, which lets anyone
+# who reads this source forge session cookies against any deployment.
+# Falls back to a random per-process key if EXPCMS_SECRET_KEY isn't set,
+# so flash messages/sessions still work out of the box, but a real
+# deployment should set the env var to something persistent.
+app.secret_key = os.environ.get("EXPCMS_SECRET_KEY") or uuid.uuid4().hex
 app.jinja_env.add_extension('jinja2.ext.do')
+
+# BUGFIX (2026-08-12, audit L7): version strings were hardcoded and
+# stale in three separate templates ("3.1" while the project was
+# actually 3.9.0). Single source of truth now: Project_Version from
+# .bejson_project.json (the project-wide version, not this one file's
+# own header version), exposed to every template.
+def _get_expcms_version() -> str:
+    try:
+        with open(os.path.join(BASE_DIR, ".bejson_project.json"), encoding="utf-8") as _f:
+            return json.load(_f).get("Project_Version", "unknown")
+    except Exception:
+        return "unknown"
+
+EXPCMS_VERSION = _get_expcms_version()
 
 @app.context_processor
 def inject_html3():
@@ -59,21 +153,32 @@ def inject_html3():
         html_brutal_table=html_brutal_table,
         html_table=html_table,
         html_widget=html_widget,
-        html_info_box=html_info_box
+        html_info_box=html_info_box,
+        expcms_version=EXPCMS_VERSION
     )
 
-@app.route('/assets/<path:filename>')
-def serve_assets(filename):
-    return send_from_directory(os.path.join(BASE_DIR, "Assets"), filename)
-
+# BUGFIX (2026-08-12, audit L6): removed serve_assets()/'/assets/<path>' -
+# it pointed at BASE_DIR/Assets, a directory that is never created by any
+# code path here and isn't referenced by any template. The built site's
+# own "assets/" folder (referenced by EXPCMS_Builder's "../assets/{...}"
+# URLs) is populated from MediaAsset records via _copy_assets() into
+# Processing/www/assets/, and is served by the preview server, not this
+# admin app - this route was dead on arrival, not a stale duplicate of
+# something still in use.
 DATA_ROOT = os.path.join(BASE_DIR, "Data")
 WWW_ROOT = os.path.join(BASE_DIR, "Processing", "www")
 cms = MFDB_CMS_Manager(DATA_ROOT)
 chunker = CMS_Chunker_Wrapper(cms)
 
-# Initialize databases on start
+# Mount the workspace at startup: creates the schema on a true fresh
+# install, extracts from a .mfdb.zip if only an archive exists, or simply
+# ensures a lock session exists if live data is already on disk. Calls
+# initialize_system() internally at the correct point - do not call it
+# separately here, or mount_system() can no longer tell a fresh install
+# apart from live data that was just initialized moments ago, and skips
+# creating the initial backup archive.
 with app.app_context():
-    cms.initialize_system()
+    cms.mount_system()
 
 # --- Preview Server State ---
 _preview_srv = {
@@ -117,14 +222,14 @@ def config():
     configs = cms.get_global_configs()
     return render_template("config.html", configs=configs)
 
-@app.route('/factory_reset')
+@app.route('/factory_reset', methods=['POST'])
 def reset_system():
     cms.factory_reset()
     cms.initialize_system()
     flash("System has been factory reset.")
     return redirect(url_for('dashboard'))
 
-@app.route('/repack')
+@app.route('/repack', methods=['POST'])
 def repack_system():
     cms.repack_system()
     flash("System repacked and changes committed.")
@@ -160,7 +265,7 @@ def media_video_add():
         flash("Couldn't parse that as a YouTube URL. Supported formats: youtube.com/watch?v=..., youtu.be/..., youtube.com/shorts/...")
     return redirect(url_for('media_library'))
 
-@app.route('/media/video/delete/<video_uuid>')
+@app.route('/media/video/delete/<video_uuid>', methods=['POST'])
 def media_video_delete(video_uuid):
     if cms.delete_video_asset(video_uuid):
         flash("Video removed from library.")
@@ -212,6 +317,17 @@ def media_upload():
         uploaded += 1
         return True
 
+    def _sanitize_folder_label(raw_folder: str) -> str:
+        """BUGFIX (2026-08-12, audit L3): folder is stored purely as a
+        UI grouping label (never used in filesystem path construction -
+        files are always written under assets_dir using safe_name), so
+        this was flagged as hygiene rather than a path-traversal bug.
+        Still worth normalizing: strips '..' components and leading
+        slashes so a crafted zip member name like '../../etc/whatever'
+        doesn't end up displayed/stored as a folder label verbatim."""
+        parts = [p for p in raw_folder.replace("\\", "/").split("/") if p not in ("", ".", "..")]
+        return "/".join(parts)
+
     for f in files:
         if not f or not f.filename:
             continue
@@ -222,14 +338,14 @@ def media_upload():
                     for name in z.namelist():
                         if name.startswith('__MACOSX') or name.endswith('/'):
                             continue
-                        folder = os.path.dirname(name)
+                        folder = _sanitize_folder_label(os.path.dirname(name))
                         data = z.read(name)
                         ct = mimetypes.guess_type(name)[0] or 'application/octet-stream'
                         process_file(data, os.path.basename(name), ct, folder)
             else:
                 # Single file or webkitdirectory bulk upload
                 # Browser sends full relative path in f.filename for dir uploads
-                folder = os.path.dirname(f.filename)
+                folder = _sanitize_folder_label(os.path.dirname(f.filename))
                 base_name = os.path.basename(f.filename)
                 # content_type from browser is unreliable for bulk dir uploads — always supplement
                 ct = f.content_type or mimetypes.guess_type(f.filename)[0] or 'application/octet-stream'
@@ -256,7 +372,7 @@ def serve_media(filename):
     base = os.path.basename(filename)
     return send_from_directory(cms.assets_dir, base)
 
-@app.route('/media/delete/<filename>')
+@app.route('/media/delete/<filename>', methods=['POST'])
 def media_delete(filename):
     if cms.delete_asset(filename):
         flash("Asset deleted")
@@ -265,6 +381,21 @@ def media_delete(filename):
 # =============================================================================
 # CONTENT & CATEGORIES
 # =============================================================================
+
+# BUGFIX (2026-08-12, audit L11): categories()/pages() hardcoded
+# 'data/category.bejson'/'data/page.bejson' instead of resolving the
+# actual current file_path from the manifest - if an entity's on-disk
+# filename ever changed (manifest reorganization, schema migration),
+# these two routes would silently read a stale/nonexistent file while
+# every other route (which goes through MFDBCore.mfdb_core_load_entity)
+# would keep working correctly.
+def _load_entity_doc_via_manifest(manifest_path: str, entity_name: str) -> dict:
+    manifest_rows = MFDBCore.mfdb_core_load_manifest(manifest_path)
+    entry = next((r for r in manifest_rows if r["entity_name"] == entity_name), None)
+    if not entry:
+        raise ValueError(f"Entity '{entity_name}' not found in manifest: {manifest_path}")
+    entity_path = os.path.normpath(os.path.join(os.path.dirname(manifest_path), entry["file_path"]))
+    return MFDBCore.bejson_core_load_file(entity_path)
 
 @app.route('/categories', methods=['GET', 'POST'])
 def categories():
@@ -285,10 +416,10 @@ def categories():
             flash('Category added successfully')
         return redirect(url_for('categories'))
 
-    cats_doc = MFDBCore.bejson_core_load_file(os.path.join(cms.content_db_root, 'data', 'category.bejson'))
+    cats_doc = _load_entity_doc_via_manifest(cms.content_manifest, "Category")
     return render_template("categories.html", cats_doc=cats_doc)
 
-@app.route('/categories/delete/<slug>')
+@app.route('/categories/delete/<slug>', methods=['POST'])
 def category_delete(slug):
     if slug == "uncategorized":
         flash('Cannot delete the default category.')
@@ -299,7 +430,7 @@ def category_delete(slug):
 
 @app.route('/pages')
 def pages():
-    pages_doc = MFDBCore.bejson_core_load_file(os.path.join(cms.content_db_root, "data", "page.bejson"))
+    pages_doc = _load_entity_doc_via_manifest(cms.content_manifest, "Page")
     return render_template("editor_list.html", pages_doc=pages_doc)
 
 @app.route('/new')
@@ -360,7 +491,8 @@ def import_html_submit():
             with tempfile.NamedTemporaryFile(suffix='.html', delete=False) as tmp:
                 tmp.write(f.read())
                 tmp_path = tmp.name
-            result = cms.import_html_as_page(tmp_path, category=category, author_uuid=author_uuid)
+            fallback_title = os.path.splitext(fname)[0].replace('_', ' ').replace('-', ' ').strip()
+            result = cms.import_html_as_page(tmp_path, category=category, author_uuid=author_uuid, fallback_title=fallback_title)
             os.unlink(tmp_path)
             if result:
                 success += 1
@@ -387,9 +519,14 @@ def edit_page_view(p):
 def save_page():
     uuid_val = request.form.get('page_uuid')
     title = request.form.get('title')
-    cat = request.form.get('category_fk')
+    # BUGFIX: an unselected/blank category previously saved as category_fk=""
+    # which matches no Category record, silently dropping the page from every
+    # feed on the exported site. Fall back to 'uncategorized' like /import does.
+    cat = request.form.get('category_fk', '').strip() or 'uncategorized'
     ptype = request.form.get('page_type')
     html_body = request.form.get('html_body')
+    if html_body:
+        html_body = MFDB_CMS_Manager._sanitize_imported_html(html_body)
     
     content_data = {"html_body": html_body}
     if ptype == 'video':
@@ -399,7 +536,15 @@ def save_page():
     elif ptype == 'source-code':
         source_files_json = request.form.get('source_files_json')
         if source_files_json:
-            content_data["source_files"] = json.loads(source_files_json)
+            # BUGFIX (2026-08-12, audit L2): malformed JSON here (e.g. a
+            # stray edit to the textarea) previously raised
+            # json.JSONDecodeError straight out of the view, returning a
+            # raw 500 instead of a usable error.
+            try:
+                content_data["source_files"] = json.loads(source_files_json)
+            except json.JSONDecodeError as exc:
+                flash(f"Source Files field is not valid JSON ({exc}); page not saved.")
+                return redirect(url_for('edit_page', uuid=uuid_val) if uuid_val else url_for('new_page'))
         else:
             content_data["source_files"] = []
             
@@ -415,7 +560,7 @@ def save_page():
         
     return redirect(url_for('pages'))
 
-@app.route('/pages/delete/<uuid>')
+@app.route('/pages/delete/<uuid>', methods=['POST'])
 def page_delete(uuid):
     cms.delete_page(uuid)
     flash("Page deleted")
@@ -431,7 +576,7 @@ def apps():
     if request.method == 'POST':
         name = request.form.get('name')
         desc = request.form.get('description')
-        cat = request.form.get('category_fk')
+        cat = request.form.get('category')
         feat_img = request.form.get('featured_img')
         entry = request.form.get('entry_file', 'index.html')
         
@@ -446,9 +591,39 @@ def apps():
             app_file.save(fpath)
             
             if fname.endswith('.zip'):
-                with zipfile.ZipFile(fpath, 'r') as z:
-                    z.extractall(app_dir)
-                os.remove(fpath)
+                MAX_APP_ZIP_MEMBERS = 2000
+                MAX_APP_ZIP_UNCOMPRESSED = 200 * 1024 * 1024  # 200MB
+                try:
+                    with zipfile.ZipFile(fpath, 'r') as z:
+                        infos = z.infolist()
+                        if len(infos) > MAX_APP_ZIP_MEMBERS:
+                            raise ValueError(f"App zip has too many entries ({len(infos)})")
+                        total_size = sum(i.file_size for i in infos)
+                        if total_size > MAX_APP_ZIP_UNCOMPRESSED:
+                            raise ValueError(f"App zip is too large uncompressed ({total_size} bytes)")
+                        # LIB-CH-H2 pattern: extract via safe_extract_zip, never raw
+                        # extractall() - guards every member against path traversal.
+                        safe_extract_zip(z, Path(app_dir))
+                    os.remove(fpath)
+                    # BUGFIX (2026-08-18, audit NEW-H3): entry_file (line 567)
+                    # came straight from the form and was never checked against
+                    # what the zip actually contained, then got interpolated raw
+                    # into an unescaped iframe src in EXPCMS_Builder.py - a value
+                    # like '" onload="alert(1)' or '../../index.html' injects
+                    # attributes/paths into every built app page. secure_filename
+                    # strips path-traversal/quote characters, and requiring the
+                    # result to actually exist in the extracted zip means an
+                    # attacker can't point the iframe at an arbitrary path.
+                    entry = secure_filename(entry) or "index.html"
+                    if not (Path(app_dir) / entry).is_file():
+                        os.remove(fpath) if os.path.exists(fpath) else None
+                        shutil.rmtree(app_dir, ignore_errors=True)
+                        flash(f"App import rejected: entry file '{entry}' not found in zip")
+                        return redirect(url_for('apps'))
+                except (ValueError, zipfile.BadZipFile) as exc:
+                    os.remove(fpath)
+                    flash(f"App import rejected: {exc}")
+                    return redirect(url_for('apps'))
             else:
                 entry = fname
                 
@@ -461,7 +636,7 @@ def apps():
     assets = cms.get_assets()
     return render_template("apps.html", apps=apps_list, cats=cats, assets=assets)
 
-@app.route('/apps/delete/<uuid>')
+@app.route('/apps/delete/<uuid>', methods=['POST'])
 def app_delete(uuid):
     cms.delete_app(uuid)
     flash("App deleted")
@@ -479,7 +654,7 @@ def navigation():
     links = cms.get_nav_links()
     return render_template("navigation.html", links=links)
 
-@app.route('/navigation/delete/<label>')
+@app.route('/navigation/delete/<label>', methods=['POST'])
 def navigation_delete(label):
     cms.delete_nav_link(label)
     return redirect(url_for('navigation'))
@@ -508,7 +683,7 @@ def authors():
     assets = cms.get_assets()
     return render_template("authors.html", authors=authors_list, assets=assets)
 
-@app.route('/authors/delete/<uuid>')
+@app.route('/authors/delete/<uuid>', methods=['POST'])
 def author_delete(uuid):
     cms.delete_author(uuid)
     flash("Author deleted")
@@ -536,7 +711,7 @@ def ads():
     assets = cms.get_assets()
     return render_template("ads.html", ads=ads_list, assets=assets)
 
-@app.route('/ads/delete/<uuid>')
+@app.route('/ads/delete/<uuid>', methods=['POST'])
 def ad_delete(uuid):
     cms.delete_ad(uuid)
     flash('Ad deleted')
@@ -552,18 +727,22 @@ def system_tools():
 
 @app.route('/preview/<uuid>')
 def preview_page(uuid):
-    """Serve a preview of a specific page from the built site."""
-    page_dir = os.path.join(WWW_ROOT, "**", "*.html")
-    import glob as _glob
-    built_pages = _glob.glob(page_dir, recursive=True)
-    # find the page by scanning built HTML for the uuid
-    for page_path in built_pages:
-        try:
-            content = open(page_path, encoding='utf-8', errors='replace').read()
-            if uuid in content:
-                return content, 200, {'Content-Type': 'text/html'}
-        except Exception:
-            continue
+    """Serve a preview of a specific page from the built site.
+
+    BUGFIX (2026-08-12, audit L4): previously glob-scanned every *.html
+    under WWW_ROOT and read each one fully into memory looking for a
+    substring match on every single request - O(site size) per preview
+    click. The page's own record already has everything needed to
+    compute its built path directly (same convention EXPCMS_Builder
+    uses in _build_page: <www_root>/<category_slug>/<page_slug>/)."""
+    page_data = cms.get_full_page_data(uuid)
+    if page_data:
+        cat_slug = page_data.get("category_fk") or "uncategorized"
+        page_slug = page_data.get("slug")
+        if page_slug:
+            page_path = os.path.join(WWW_ROOT, cat_slug, page_slug, "index.html")
+            if os.path.exists(page_path):
+                return open(page_path, encoding='utf-8', errors='replace').read(), 200, {'Content-Type': 'text/html'}
     # fallback: serve the homepage with a notice
     flash(f"Page {uuid} not yet built — run Build Site first.")
     return redirect(url_for('build_site'))
@@ -600,7 +779,19 @@ def srv_start():
             import functools
             handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=WWW_ROOT)
             socketserver.TCPServer.allow_reuse_address = True
-            _preview_srv["httpd"] = socketserver.TCPServer(("", _preview_srv["port"]), handler)
+            # BUGFIX (2026-08-18, audit NEW-H2): this was hardcoded to bind
+            # "" (0.0.0.0). H1 (pkg25) locked the *admin* app to loopback by
+            # default, but this preview server - which serves the built
+            # site, including hosted standalone apps (see NEW-H3) - was
+            # missed and stayed on all interfaces with no auth. Mirrors the
+            # H1 pattern: env-driven, loopback default, loud warning if
+            # overridden.
+            preview_host = os.environ.get("EXPCMS_PREVIEW_HOST", "127.0.0.1")
+            if preview_host not in ("127.0.0.1", "localhost"):
+                print(f"WARNING: EXPCMS_PREVIEW_HOST={preview_host} exposes the "
+                      f"preview server (unauthenticated, serves built site + "
+                      f"hosted apps) beyond loopback.")
+            _preview_srv["httpd"] = socketserver.TCPServer((preview_host, _preview_srv["port"]), handler)
             _preview_srv["httpd"].serve_forever()
         
         _preview_srv["thread"] = threading.Thread(target=run_srv, daemon=True)
@@ -643,7 +834,22 @@ def backup_restore():
     filename = request.form.get("filename")
     result = chunker.restore_site(filename)
     if result["success"]:
-        flash(result["message"])
+        # BUGFIX (2026-08-11, audit M2 follow-up): restore_site() now
+        # swaps in a whole new db_global/db_content workspace. Re-mount
+        # so locks/in-memory manifests are current, then rebuild the
+        # static site so it isn't left showing the pre-restore content.
+        try:
+            cms.mount_system(force=True)
+            from EXPCMS_Builder import EXPCMS_Builder
+            builder = EXPCMS_Builder(
+                data_root=os.path.join(BASE_DIR, "Data"),
+                skel_dir=os.path.join(BASE_DIR, "HTML_Skeletons"),
+                output_dir=WWW_ROOT
+            )
+            builder.build_site()
+            flash(result["message"] + " Site rebuilt.")
+        except Exception as exc:
+            flash(result["message"] + f" (rebuild after restore failed: {exc} - run Build Site manually)")
     else:
         flash(f"Restore failed: {result['error']}")
     return redirect(url_for('backups'))
@@ -740,20 +946,20 @@ def get_sidebar_html():
         '.c-sidebar-group__btn {',
         '  width: 100%; background: none; border: none; padding: 8px 12px;',
         '  display: flex; align-items: center; gap: 8px; cursor: pointer;',
-        '  color: #aaa; font-family: var(--font-mono);',
+        '  color: var(--text-main); font-family: var(--font-mono);',
         '  font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.08em;',
         '  font-weight: 700; border-radius: 4px; transition: background 0.15s;',
         '  text-align: left;',
         '}',
-        '.c-sidebar-group__btn:hover { background: rgba(255,255,255,0.05); color: #fff; }',
-        '.c-sidebar-group__btn[aria-expanded="true"] { color: #e0e0e0; }',
+        '.c-sidebar-group__btn:hover { background: var(--primary); color: #fff; }',
+        '.c-sidebar-group__btn[aria-expanded="true"] { color: var(--text-main); }',
         '.c-sidebar-group__chevron { margin-left: auto; transition: transform 0.2s; display: inline-flex; align-items: center; width: 12px; height: 12px; flex-shrink: 0; transform: rotate(90deg); }',
         '.c-sidebar-group__btn[aria-expanded="false"] .c-sidebar-group__chevron { transform: rotate(0deg); }',
         '.c-sidebar-group__links { display: none; padding-left: 8px; }',
         '.c-sidebar-group__links--open { display: block; }',
-        '.c-sidebar__link { display: flex; align-items: center; gap: 8px; padding: 7px 12px; font-size: 0.75rem; color: #b0b0b0; text-decoration: none; border-radius: 4px; transition: background 0.15s, color 0.15s; border-left: 2px solid transparent; }',
-        '.c-sidebar__link:hover { background: rgba(255,255,255,0.06); color: #fff; }',
-        '.c-sidebar__link--active { background: rgba(222,38,38,0.18); color: #fff; font-weight: 600; border-left: 2px solid var(--primary); }',
+        '.c-sidebar__link { display: flex; align-items: center; gap: 8px; padding: 7px 12px; font-size: 0.75rem; color: var(--text-main); text-decoration: none; border-radius: 4px; transition: background 0.15s, color 0.15s; border-left: 2px solid transparent; }',
+        '.c-sidebar__link:hover { background: var(--primary); color: #fff; }',
+        '.c-sidebar__link--active { background: var(--primary); color: #fff; font-weight: 600; border-left: 2px solid var(--primary); }',
         '.c-sidebar__link svg { width: 13px; height: 13px; flex-shrink: 0; }',
         '</style>',
         '<nav id="admin-sidebar-nav">',
@@ -811,4 +1017,23 @@ function toggleGroup(id) {
     return _sidebar_cache
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5005, debug=True)
+    # SECURITY (2026-08-11, audit finding H1): this app has no
+    # authentication anywhere. Previously bound 0.0.0.0 with debug=True,
+    # exposing the Werkzeug interactive debugger (arbitrary code
+    # execution) to the whole LAN. Now config-driven, defaulting to
+    # loopback-only with the debugger off; debug is only ever enabled
+    # automatically when the host is loopback.
+    _run_host = os.environ.get("EXPCMS_HOST", "127.0.0.1")
+    _run_port = int(os.environ.get("EXPCMS_PORT", "5005"))
+    _run_debug_env = os.environ.get("EXPCMS_DEBUG")
+    if _run_debug_env is not None:
+        _run_debug = _run_debug_env.strip().lower() in ("1", "true", "yes")
+    else:
+        _run_debug = _run_host in ("127.0.0.1", "localhost", "::1")
+    if _run_host not in ("127.0.0.1", "localhost", "::1") and _run_debug:
+        raise RuntimeError(
+            "EXPCMS_DEBUG=1 with non-loopback EXPCMS_HOST is BLOCKED. "
+            "The Werkzeug debugger exposes arbitrary code execution to the network. "
+            "Set EXPCMS_HOST to 127.0.0.1 or unset EXPCMS_DEBUG."
+        )
+    app.run(host=_run_host, port=_run_port, debug=_run_debug)

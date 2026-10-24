@@ -3,7 +3,7 @@
 {% block content %}
 <h1 class="emphasis" style="margin-bottom: 16px;">Authors</h1>
 <div style="margin-bottom: 20px;">
-    <button onclick="document.getElementById('add-author-modal').classList.remove('hidden')" class="btn-primary">+ NEW AUTHOR</button>
+    <button id="new-author-open-btn" class="btn-primary">+ NEW AUTHOR</button>
 </div>
 
 <div class="c-card-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">
@@ -22,7 +22,9 @@
         </div>
         <div style="display: flex; flex-direction: column; gap: 8px;">
             <button onclick='editAuthor({{ a | tojson | safe }})' title="Edit profile" style="background: var(--bg-alt); border: 1px solid var(--border); border-radius: 4px; color: var(--text-main); cursor: pointer; padding: 6px 8px; font-size: 0.9rem; line-height: 1;">✏️</button>
-            <a href="/authors/delete/{{ a.author_uuid }}" title="Delete profile" style="background: var(--bg-alt); border: 1px solid var(--border); border-radius: 4px; color: var(--primary); padding: 6px 8px; font-size: 0.9rem; line-height: 1; text-align: center; text-decoration: none;" onclick="return confirm('Delete author?')">🗑</a>
+            <form method="POST" action="/authors/delete/{{ a.author_uuid }}" onsubmit="return confirm('Delete author?')" style="display:contents;">
+                <button type="submit" title="Delete profile" style="background: var(--bg-alt); border: 1px solid var(--border); border-radius: 4px; color: var(--primary); cursor: pointer; padding: 6px 8px; font-size: 0.9rem; line-height: 1;">🗑</button>
+            </form>
         </div>
     </div>
     {% endfor %}
@@ -83,7 +85,13 @@
     }
     
     // Reset modal on manual open
-    const newBtn = document.querySelector('.c-code-box__copy');
+    // FIX (2026-08-05): was querySelector('.c-code-box__copy'), which matches
+    // the modal's own CREATE/submit button (id="submit-btn"), not this open
+    // button. That wired the reset-to-blank logic to fire on submit click,
+    // clearing the required Name/Bio fields right before native validation
+    // ran - so the browser blocked submission and no author was ever
+    // created. Now targets the open button by id instead.
+    const newBtn = document.getElementById('new-author-open-btn');
     if (newBtn) {
         newBtn.onclick = () => {
             document.getElementById('modal-title').innerText = "Add Author Profile";

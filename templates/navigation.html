@@ -25,7 +25,7 @@
     {% set rows = [] %}
     {% for l in links %}
         {% set actions = [
-            {'url': '/navigation/delete/' + l.label, 'label': 'Delete', 'class': 'u-text-primary'}
+            {'url': '/navigation/delete/' + l.label, 'label': 'Delete', 'class': 'u-text-primary', 'method': 'POST', 'confirm': 'Delete nav link "' + l.label + '"?'}
         ] %}
         {% do rows.append({
             'label': l.label,

@@ -3,7 +3,7 @@
 {% block content %}
 <h1 class="emphasis" style="margin-bottom: 16px;">Ad Rotator</h1>
 <div style="margin-bottom: 20px;">
-    <button onclick="document.getElementById('add-ad-modal').classList.remove('hidden')" class="btn-primary">+ NEW AD UNIT</button>
+    <button id="new-ad-open-btn" class="btn-primary">+ NEW AD UNIT</button>
 </div>
 
 {% set columns = ['Campaign', 'Zone', 'Status'] %}
@@ -11,7 +11,7 @@
 {% for a in ads %}
     {% set actions = [
         {'url': 'javascript:editAd(' + a | tojson + ')', 'label': 'Edit', 'class': 'u-text-muted'},
-        {'url': '/ads/delete/' + a.ad_uuid, 'label': 'Delete', 'class': 'u-text-primary'}
+        {'url': '/ads/delete/' + a.ad_uuid, 'label': 'Delete', 'class': 'u-text-primary', 'method': 'POST', 'confirm': 'Delete ad "' + (a.name or a.ad_uuid) + '"?'}
     ] %}
     {% do rows.append({
         'campaign': a.name,
@@ -91,7 +91,12 @@
     }
     
     // Reset modal on manual open
-    const newBtn = document.querySelector('.u-flex .c-code-box__copy');
+    // BUGFIX (2026-08-11, audit M8): '.u-flex .c-code-box__copy' matched
+    // nothing in this template (no .u-flex element exists here), so this
+    // handler never attached and editing an ad then clicking "+ NEW AD
+    // UNIT" reopened the modal with stale values. Same bug class pkg22
+    // fixed in authors.html via a dedicated id - applying the same fix.
+    const newBtn = document.getElementById('new-ad-open-btn');
     if (newBtn) {
         newBtn.onclick = () => {
             document.getElementById('modal-title').innerText = "Create Ad Unit";

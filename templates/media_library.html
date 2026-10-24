@@ -59,11 +59,13 @@
                         style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-weight: 700;">
                     COPY URL
                 </button>
-                <a href="/media/video/delete/{{ v.video_uuid }}"
-                   onclick="return confirm('Remove {{ v.title or v.video_id }} from the library?')"
-                   style="background: rgba(222,38,38,0.8); border: none; color: #fff; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-weight: 700; text-align: center; text-decoration: none;">
-                    DELETE
-                </a>
+                <form method="POST" action="/media/video/delete/{{ v.video_uuid }}"
+                      onsubmit="return confirm('Remove {{ v.title or v.video_id }} from the library?')" style="display:contents;">
+                    <button type="submit"
+                            style="background: rgba(222,38,38,0.8); border: none; color: #fff; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-weight: 700; text-align: center;">
+                        DELETE
+                    </button>
+                </form>
                 <span style="font-size: 0.65rem; opacity: 0.7; text-align: center; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                     {{ v.title or v.video_id }}
                 </span>
@@ -91,13 +93,15 @@
                             style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-weight: 700;">
                         COPY URL
                     </button>
-                    <a href="/media/delete/{{ a.filename }}"
-                       onclick="return confirm('Delete {{ a.original_filename }}?')"
-                       style="background: rgba(222,38,38,0.8); border: none; color: #fff; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-weight: 700; text-align: center; text-decoration: none;">
-                        DELETE
-                    </a>
+                    <form method="POST" action="/media/delete/{{ a.filename }}"
+                          onsubmit="return confirm('Delete {{ a.original_name }}?')" style="display:contents;">
+                        <button type="submit"
+                                style="background: rgba(222,38,38,0.8); border: none; color: #fff; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-weight: 700; text-align: center;">
+                            DELETE
+                        </button>
+                    </form>
                     <span style="font-size: 0.65rem; opacity: 0.7; text-align: center; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                        {{ a.original_filename }}
+                        {{ a.original_name }}
                     </span>
                 </div>
             </div>
