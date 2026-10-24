@@ -45,7 +45,7 @@
       null,
       5,
       "1.0",
-      "category_slug"
+      "category_uuid"
     ],
     [
       "Page",
@@ -61,7 +61,7 @@
       null,
       8,
       "1.0",
-      null
+      "content_uuid"
     ],
     [
       "StandaloneApp",

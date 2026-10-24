@@ -1,0 +1,112 @@
+{
+  "Format": "BEJSON",
+  "Format_Version": "104a",
+  "Format_Creator": "Elton Boehnen",
+  "Schema_Version": "2.0.0",
+  "Project_Name": "Experimental_CMS",
+  "Description": "Canonical Schema Registry and Relational Taxonomy Specification adhering to Policy 10.1, 10.3, and 10.4",
+  "Records_Type": ["SchemaDefinition"],
+  "Fields": [
+    {"name": "entity_name", "type": "string"},
+    {"name": "database_scope", "type": "string"},
+    {"name": "file_rel_path", "type": "string"},
+    {"name": "primary_key", "type": "string"},
+    {"name": "foreign_keys", "type": "array"},
+    {"name": "owning_writer_module", "type": "string"},
+    {"name": "field_count", "type": "integer"}
+  ],
+  "Values": [
+    [
+      "Category",
+      "db_content",
+      "data/category.bejson",
+      "category_uuid",
+      [],
+      "lib_bejson_ExpCMS_category_writer",
+      7
+    ],
+    [
+      "Page",
+      "db_content",
+      "data/page.bejson",
+      "page_uuid",
+      [
+        {"column": "category_fk", "references": "Category.category_uuid", "on_delete": "default", "default_val": "00000000-0000-0000-0000-000000000001"},
+        {"column": "author_fk", "references": "AuthorProfile.author_uuid", "on_delete": "null"},
+        {"column": "page_featured_asset_fk", "references": "MediaAsset.asset_uuid", "on_delete": "null"}
+      ],
+      "lib_bejson_ExpCMS_page_writer",
+      9
+    ],
+    [
+      "PageContent",
+      "db_content",
+      "data/pagecontent.bejson",
+      "content_uuid",
+      [
+        {"column": "page_fk", "references": "Page.page_uuid", "on_delete": "cascade"}
+      ],
+      "lib_bejson_ExpCMS_page_writer",
+      8
+    ],
+    [
+      "StandaloneApp",
+      "db_content",
+      "data/standaloneapp.bejson",
+      "app_uuid",
+      [
+        {"column": "app_category_fk", "references": "Category.category_uuid", "on_delete": "default", "default_val": "00000000-0000-0000-0000-000000000001"},
+        {"column": "app_icon_asset_fk", "references": "MediaAsset.asset_uuid", "on_delete": "null"}
+      ],
+      "lib_bejson_ExpCMS_app_writer",
+      8
+    ],
+    [
+      "AuthorProfile",
+      "db_global",
+      "data/authorprofile.bejson",
+      "author_uuid",
+      [
+        {"column": "author_avatar_asset_fk", "references": "MediaAsset.asset_uuid", "on_delete": "null"}
+      ],
+      "lib_bejson_ExpCMS_author_writer",
+      5
+    ],
+    [
+      "MediaAsset",
+      "db_global",
+      "data/mediaasset.bejson",
+      "asset_uuid",
+      [],
+      "lib_bejson_ExpCMS_media_writer",
+      7
+    ],
+    [
+      "NavLink",
+      "db_global",
+      "data/navlink.bejson",
+      "nav_uuid",
+      [],
+      "lib_bejson_ExpCMS_global_writer",
+      5
+    ],
+    [
+      "SocialLink",
+      "db_global",
+      "data/sociallink.bejson",
+      "social_uuid",
+      [],
+      "lib_bejson_ExpCMS_global_writer",
+      5
+    ],
+    [
+      "SiteConfig",
+      "db_global",
+      "data/siteconfig.bejson",
+      "config_key",
+      [],
+      "lib_bejson_ExpCMS_global_writer",
+      4
+    ]
+  ]
+}

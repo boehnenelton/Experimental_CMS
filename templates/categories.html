@@ -21,14 +21,17 @@
     {% set columns = ['Name', 'Slug', 'Feed Type'] %}
     {% set rows = [] %}
     {% for r in cats_doc.Values %}
+        {% set c_name = r[f_map['category_name']] if f_map is defined and 'category_name' in f_map else (r[1] if r|length > 4 else r[0]) %}
+        {% set c_slug = r[f_map['category_slug']] if f_map is defined and 'category_slug' in f_map else (r[2] if r|length > 4 else r[1]) %}
+        {% set c_feed = r[f_map['category_feed_type']] if f_map is defined and 'category_feed_type' in f_map else (r[4] if r|length > 4 else r[3]) %}
         {% set actions = [
             {'url': 'javascript:editCategory(' + r | tojson + ')', 'label': 'Edit', 'class': 'u-text-muted'},
-            {'url': '/categories/delete/' + r[1], 'label': 'Delete', 'class': 'u-text-primary', 'method': 'POST', 'confirm': 'Delete category "' + (r[0] or r[1]) + '"?'}
+            {'url': '/categories/delete/' + c_slug, 'label': 'Delete', 'class': 'u-text-primary', 'method': 'POST', 'confirm': 'Delete category "' + (c_name or c_slug) + '"?'}
         ] %}
         {% do rows.append({
-            'name': r[0],
-            'slug': r[1],
-            'feed_type': r[3],
+            'name': c_name,
+            'slug': c_slug,
+            'feed_type': c_feed,
             '_actions': actions
         }) %}
     {% endfor %}
@@ -40,11 +43,19 @@
 
 <script>
     function editCategory(r) {
-        document.getElementById('form-name').value = r[0];
-        document.getElementById('form-slug').value = r[1];
-        document.getElementById('form-slug').readOnly = true;
-        document.getElementById('form-description').value = r[2];
-        document.getElementById('form-feed-type').value = r[3];
+        if (r.length >= 7) {
+            document.getElementById('form-name').value = r[1];
+            document.getElementById('form-slug').value = r[2];
+            document.getElementById('form-slug').readOnly = true;
+            document.getElementById('form-description').value = r[3] || "";
+            document.getElementById('form-feed-type').value = r[4] || "article";
+        } else {
+            document.getElementById('form-name').value = r[0];
+            document.getElementById('form-slug').value = r[1];
+            document.getElementById('form-slug').readOnly = true;
+            document.getElementById('form-description').value = r[2] || "";
+            document.getElementById('form-feed-type').value = r[3] || "article";
+        }
         document.getElementById('form-submit').innerText = "SAVE CHANGES";
     }
 </script>

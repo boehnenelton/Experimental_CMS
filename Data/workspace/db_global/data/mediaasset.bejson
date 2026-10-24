@@ -30,6 +30,10 @@
     {
       "name": "uploaded_at",
       "type": "string"
+    },
+    {
+      "name": "folder",
+      "type": "string"
     }
   ],
   "Values": []

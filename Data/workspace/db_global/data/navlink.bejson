@@ -8,16 +8,24 @@
   ],
   "Fields": [
     {
-      "name": "label",
+      "name": "nav_uuid",
       "type": "string"
     },
     {
-      "name": "url",
+      "name": "nav_label",
       "type": "string"
     },
     {
-      "name": "order",
+      "name": "nav_url",
+      "type": "string"
+    },
+    {
+      "name": "nav_sort_order",
       "type": "integer"
+    },
+    {
+      "name": "nav_created_at",
+      "type": "string"
     }
   ],
   "Values": []

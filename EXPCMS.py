@@ -417,7 +417,8 @@ def categories():
         return redirect(url_for('categories'))
 
     cats_doc = _load_entity_doc_via_manifest(cms.content_manifest, "Category")
-    return render_template("categories.html", cats_doc=cats_doc)
+    f_map = {f["name"].strip(): i for i, f in enumerate(cats_doc.get("Fields", []))}
+    return render_template("categories.html", cats_doc=cats_doc, f_map=f_map)
 
 @app.route('/categories/delete/<slug>', methods=['POST'])
 def category_delete(slug):
@@ -431,7 +432,16 @@ def category_delete(slug):
 @app.route('/pages')
 def pages():
     pages_doc = _load_entity_doc_via_manifest(cms.content_manifest, "Page")
-    return render_template("editor_list.html", pages_doc=pages_doc)
+    f_map = {f["name"].strip(): i for i, f in enumerate(pages_doc.get("Fields", []))}
+    cats = MFDBCore.mfdb_core_load_entity(cms.content_manifest, "Category")
+    cat_lookup = {}
+    for c in cats:
+        c_uuid = c.get("category_uuid") or ""
+        c_slug = c.get("category_slug") or ""
+        c_name = c.get("category_name") or ""
+        if c_uuid: cat_lookup[c_uuid] = c_name
+        if c_slug: cat_lookup[c_slug] = c_name
+    return render_template("editor_list.html", pages_doc=pages_doc, f_map=f_map, cat_lookup=cat_lookup)
 
 @app.route('/new')
 def new_page():

@@ -37,7 +37,7 @@
             <label class="c-bejson-form__label">Category <span class="c-bejson-form__type">fk</span></label>
             <select name="category_fk" class="c-bejson-form__input">
                 {% for cat in cats %}
-                <option value="{{ cat.category_slug }}" {% if cat.category_slug == p.category_fk or (not p.category_fk and cat.category_slug == 'uncategorized') %}selected{% endif %}>
+                <option value="{{ cat.category_slug }}" {% if cat.category_slug == p.category_fk or cat.category_uuid == p.category_fk or (not p.category_fk and cat.category_slug == 'uncategorized') %}selected{% endif %}>
                     {{ cat.category_name }}
                 </option>
                 {% endfor %}

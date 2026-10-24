@@ -315,7 +315,7 @@ class EXPCMS_Builder:
         pages = self.cms.get_pages_in_category(cat["category_slug"])
         apps = self.cms.get_apps_in_category(cat["category_slug"])
         
-        feed_type = cat.get("feed_type", "blog")
+        feed_type = cat.get("category_feed_type") or cat.get("feed_type") or "blog"
         
         item_html = ""
         for p in pages:
@@ -369,8 +369,8 @@ class EXPCMS_Builder:
             })
 
         feed_content = Template(feed_skel).render({
-            "category_name": cat["category_name"],
-            "category_description": cat["description"],
+            "category_name": cat.get("category_name") or cat.get("name", ""),
+            "category_description": cat.get("category_description") or cat.get("description", ""),
             "feed_type": feed_type,
             "content_items": item_html
         })

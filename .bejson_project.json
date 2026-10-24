@@ -4,7 +4,7 @@
   "Format_Creator": "Elton Boehnen",
   "Project_Name": "Experimental_CMS",
   "Project_Version": "3.11.0",
-  "Package_Version": "32",
+  "Package_Version": "33",
   "Schema_Version": "1.0.2",
   "Records_Type": [
     "RootPackage"
@@ -45,11 +45,18 @@
       "Reorganized root documentation: migrated AGENTS.md, audit notes, security notes, and cleanup logs into dev/; moved CHANGELOG.md, CONTRIBUTING.md, and SECURITY.md into docs/. Authored authoritative root README.md with comprehensive feature matrix, TOC, architecture diagrams, and usage guide.",
       "2026-10-17",
       "08-20_2026-10"
+    ],
+    [
+      "3.11.0",
+      "pkg33 Taxonomy v2.0 Schema Registry, Owning Writers & E2E Verification",
+      "Instantiated Data/schema_registry.104a.bejson enforcing Policy §10. Migrated workspace database records via dev/migrate_taxonomy_v2.py (injected immutable UUIDv4 primary keys into Category, PageContent, NavLink, SocialLink; remapped category_fk to UUIDs; normalized snake_case prefixes). Extracted single-responsibility Owning Writers in Lib_PY/ExpCMS (CategoryOwningWriter, PageOwningWriter, AuthorOwningWriter, MediaOwningWriter) enforcing Policy §10.4 and Policy §6.2 O(1) field map caching. Updated EXPCMS.py routes and templates for field-map lookups. Executed Playwright E2E test suite achieving 15/15 100% pass rate.",
+      "2026-10-24",
+      "00-50_2026-10"
     ]
   ],
   "Project_Description": "Schema template for tracking project file. Belongs in the root of each project or package.",
   "Project_GUID": "0188f906-4aef-445a-b4be-5db7398efc8f",
-  "Project_Modified_Date": "2026-10-24T00:30:00Z",
-  "Versioned_UUID": "73f46b5a-4201-4afc-9b06-09a8dded7cea",
-  "Archive_Filename": "Experimental_CMS-V3110-PKG32.zip"
+  "Project_Modified_Date": "2026-10-24T00:50:30Z",
+  "Versioned_UUID": "f43774cd-2b65-425b-aa35-eaa63e853cbb",
+  "Archive_Filename": "Experimental_CMS-V3110-PKG33.zip"
 }

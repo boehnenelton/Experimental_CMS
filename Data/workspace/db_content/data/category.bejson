@@ -8,6 +8,10 @@
   ],
   "Fields": [
     {
+      "name": "category_uuid",
+      "type": "string"
+    },
+    {
       "name": "category_name",
       "type": "string"
     },
@@ -16,44 +20,67 @@
       "type": "string"
     },
     {
-      "name": "description",
+      "name": "category_description",
       "type": "string"
     },
     {
-      "name": "feed_type",
+      "name": "category_feed_type",
+      "type": "string"
+    },
+    {
+      "name": "category_created_at",
+      "type": "string"
+    },
+    {
+      "name": "category_updated_at",
       "type": "string"
     }
   ],
   "Values": [
     [
+      "00000000-0000-0000-0000-000000000001",
       "Uncategorized",
       "uncategorized",
       "General posts",
-      "blog"
+      "blog",
+      "2026-10-24T00:34:55Z",
+      "2026-10-24T00:34:55Z"
     ],
     [
+      "ff5eaa24-d6e0-484b-b2dd-0b3b0fccedf6",
       "BEJSON",
       "BEJSON",
       "A tabular format built off of JSON that relies on positional integrity.",
-      "article"
+      "article",
+      "2026-10-24T00:34:55Z",
+      "2026-10-24T00:34:55Z"
     ],
     [
+      "9e586dbe-c178-4adc-83a5-ae418ecf3b14",
       "Articles",
       "articles",
       "Long-form written content",
-      "article"
+      "article",
+      "2026-10-24T00:34:55Z",
+      "2026-10-24T00:34:55Z"
     ],
     [
+      "ffa197ab-1ea1-4f45-87a2-ebf99cfe308a",
       "News",
       "news",
       "Latest updates and announcements",
-      "news"
+      "news",
+      "2026-10-24T00:34:55Z",
+      "2026-10-24T00:34:55Z"
     ],
     [
+      "6b766351-eb31-4aea-8af6-38c69c8e520e",
       "Gallery",
       "gallery",
       "Visual masonry gallery",
-      "masonry"
+      "masonry",
+      "2026-10-24T00:34:55Z",
+      "2026-10-24T00:34:55Z"
     ]
   ]
 }

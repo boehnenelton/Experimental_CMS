@@ -12,14 +12,6 @@
       "type": "string"
     },
     {
-      "name": "title",
-      "type": "string"
-    },
-    {
-      "name": "slug",
-      "type": "string"
-    },
-    {
       "name": "category_fk",
       "type": "string"
     },
@@ -28,98 +20,118 @@
       "type": "string"
     },
     {
+      "name": "page_featured_asset_fk",
+      "type": "string"
+    },
+    {
+      "name": "page_title",
+      "type": "string"
+    },
+    {
+      "name": "page_slug",
+      "type": "string"
+    },
+    {
       "name": "page_type",
       "type": "string"
     },
     {
-      "name": "featured_img",
+      "name": "page_created_at",
       "type": "string"
     },
     {
-      "name": "created_at",
+      "name": "page_updated_at",
       "type": "string"
     }
   ],
   "Values": [
     [
       "c6d693b8-f3b7-43fb-b99f-f98ffa876e49",
+      "00000000-0000-0000-0000-000000000001",
+      "",
+      null,
       "Needs fixed",
       "needs_fixed",
-      "uncategorized",
-      null,
       "article",
-      null,
-      "2026-06-20T04:54:33Z"
+      "2026-06-20T04:54:33Z",
+      "2026-10-24T00:34:55Z"
     ],
     [
       "1572685b-d638-4e5f-ad3d-b061e89b0627",
+      "9e586dbe-c178-4adc-83a5-ae418ecf3b14",
+      "",
+      "",
       "Article 1: BEJSON Architecture Deep Dive",
       "article-1-bejson-architecture-deep-dive",
-      "articles",
-      "",
       "article",
-      "",
-      "2026-07-13T08:52:11Z"
+      "2026-07-13T08:52:11Z",
+      "2026-10-24T00:34:55Z"
     ],
     [
       "c87804ec-3193-4b61-b09a-429940b01d9e",
+      "9e586dbe-c178-4adc-83a5-ae418ecf3b14",
+      "",
+      "",
       "Article 2: BEJSON Architecture Deep Dive",
       "article-2-bejson-architecture-deep-dive",
-      "articles",
-      "",
       "article",
-      "",
-      "2026-07-13T08:52:11Z"
+      "2026-07-13T08:52:11Z",
+      "2026-10-24T00:34:55Z"
     ],
     [
       "5f7aec76-2ce3-4d69-b04a-1726c16c9221",
+      "9e586dbe-c178-4adc-83a5-ae418ecf3b14",
+      "",
+      "",
       "Article 3: BEJSON Architecture Deep Dive",
       "article-3-bejson-architecture-deep-dive",
-      "articles",
-      "",
       "article",
-      "",
-      "2026-07-13T08:52:11Z"
+      "2026-07-13T08:52:11Z",
+      "2026-10-24T00:34:55Z"
     ],
     [
       "bd51e2af-12db-443d-aa39-c481bbb93846",
+      "ffa197ab-1ea1-4f45-87a2-ebf99cfe308a",
+      "",
+      "",
       "News Item 1: Library Update v201",
       "news-item-1-library-update-v201",
-      "news",
-      "",
       "article",
-      "",
-      "2026-07-13T08:52:11Z"
+      "2026-07-13T08:52:11Z",
+      "2026-10-24T00:34:55Z"
     ],
     [
       "80080765-88f2-4484-8cad-5f4ac4852637",
+      "ffa197ab-1ea1-4f45-87a2-ebf99cfe308a",
+      "",
+      "",
       "News Item 2: Library Update v202",
       "news-item-2-library-update-v202",
-      "news",
-      "",
       "article",
-      "",
-      "2026-07-13T08:52:11Z"
+      "2026-07-13T08:52:11Z",
+      "2026-10-24T00:34:55Z"
     ],
     [
       "e508e633-1310-4e4f-b96d-2e81c30e10f7",
+      "6b766351-eb31-4aea-8af6-38c69c8e520e",
+      "",
+      "",
       "Gallery Image 1",
       "gallery-image-1",
       "gallery",
-      "",
-      "gallery",
-      "",
-      "2026-07-13T08:52:11Z"
+      "2026-07-13T08:52:11Z",
+      "2026-10-24T00:34:55Z"
     ],
     [
       "23a104b0-c9e5-44c1-b2cb-860525c87d9c",
+      "6b766351-eb31-4aea-8af6-38c69c8e520e",
+      "",
+      "",
       "Gallery Image 2",
       "gallery-image-2",
       "gallery",
-      "",
-      "gallery",
-      "",
-      "2026-07-13T08:52:11Z"
+      "2026-07-13T08:52:11Z",
+      "2026-10-24T00:34:55Z"
     ]
   ]
 }

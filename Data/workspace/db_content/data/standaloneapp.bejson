@@ -12,31 +12,31 @@
       "type": "string"
     },
     {
-      "name": "name",
+      "name": "app_category_fk",
       "type": "string"
     },
     {
-      "name": "slug",
+      "name": "app_icon_asset_fk",
       "type": "string"
     },
     {
-      "name": "description",
+      "name": "app_name",
       "type": "string"
     },
     {
-      "name": "category_fk",
+      "name": "app_slug",
       "type": "string"
     },
     {
-      "name": "featured_img",
+      "name": "app_entry_file",
       "type": "string"
     },
     {
-      "name": "entry_file",
+      "name": "app_description",
       "type": "string"
     },
     {
-      "name": "created_at",
+      "name": "app_created_at",
       "type": "string"
     }
   ],

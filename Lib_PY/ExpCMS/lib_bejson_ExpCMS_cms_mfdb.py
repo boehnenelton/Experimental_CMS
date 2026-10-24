@@ -175,6 +175,17 @@ class MFDB_CMS_Manager:
         if not os.path.exists(self.assets_dir): os.makedirs(self.assets_dir)
         if not os.path.exists(self.apps_dir): os.makedirs(self.apps_dir)
 
+        # Single Write-Owner Modules (Policy §10.4)
+        from lib_bejson_ExpCMS_category_writer import CategoryOwningWriter
+        from lib_bejson_ExpCMS_page_writer import PageOwningWriter
+        from lib_bejson_ExpCMS_author_writer import AuthorOwningWriter
+        from lib_bejson_ExpCMS_media_writer import MediaOwningWriter
+
+        self.category_writer = CategoryOwningWriter(self.content_manifest)
+        self.page_writer = PageOwningWriter(self.content_manifest)
+        self.author_writer = AuthorOwningWriter(self.global_manifest)
+        self.media_writer = MediaOwningWriter(self.global_manifest, self.assets_dir)
+
     def log_change(self, entity: str, action: str, identifier: Any, metadata: dict = None):
         """Records a specific modification for granular state tracking."""
         self.change_log.append({
@@ -411,33 +422,22 @@ class MFDB_CMS_Manager:
                 break
 
     def add_author(self, name: str, bio: str, image_url: str):
-        auuid = str(uuid.uuid4())
-        MFDBCore.mfdb_core_add_entity_record(self.global_manifest, "AuthorProfile", [auuid, name, bio, image_url])
-        self.log_change("AuthorProfile", "ADD", auuid)
-        return auuid
+        res = self.author_writer.create_author(name, bio, image_url)
+        self.log_change("AuthorProfile", "ADD", res["author_uuid"])
+        return res["author_uuid"]
 
     def update_author(self, author_uuid: str, name: str, bio: str, image_url: str):
-        recs = self.get_authors()
-        for i, r in enumerate(recs):
-            if r["author_uuid"] == author_uuid:
-                updates = {
-                    "name": name,
-                    "bio": bio,
-                    "image_url": image_url
-                }
-                MFDBCore.mfdb_core_update_entity_record_bulk(self.global_manifest, "AuthorProfile", i, updates)
-                self.log_change("AuthorProfile", "UPDATE", author_uuid)
-                break
+        res = self.author_writer.update_author(author_uuid, name, bio, image_url)
+        self.log_change("AuthorProfile", "UPDATE", author_uuid)
+        return res
 
     def delete_author(self, author_uuid: str):
-        recs = self.get_authors()
-        for i, r in enumerate(recs):
-            if r["author_uuid"] == author_uuid:
-                MFDBCore.mfdb_core_remove_entity_record(self.global_manifest, "AuthorProfile", i)
-                self.log_change("AuthorProfile", "DELETE", author_uuid)
-                break
+        res = self.author_writer.delete_author(author_uuid)
+        self.log_change("AuthorProfile", "DELETE", author_uuid)
+        return res
 
-    def get_authors(self) -> List[Dict]: return MFDBCore.mfdb_core_load_entity(self.global_manifest, "AuthorProfile")
+    def get_authors(self) -> List[Dict]:
+        return self.author_writer.get_all_authors()
 
     def add_ad(self, name: str, img: str, link: str, zone: str, active: bool = True):
         auuid = str(uuid.uuid4())
@@ -447,125 +447,44 @@ class MFDB_CMS_Manager:
 
     def add_asset(self, filename: str, original_name: str, file_hash: str, file_size: int, mime_type: str, folder: str = ""):
         """Registers an asset that has already been saved to the assets directory."""
-        uploaded_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-        MFDBCore.mfdb_core_add_entity_record(self.global_manifest, "MediaAsset", [filename, original_name, file_hash, file_size, mime_type, uploaded_at, folder])
-        self.log_change("MediaAsset", "ADD", filename)
+        asset_uuid = self.media_writer.add_media_asset(filename, original_name, mime_type, file_size, folder)
+        self.log_change("MediaAsset", "ADD", asset_uuid)
         return filename
 
     def delete_asset(self, filename: str):
-        recs = MFDBCore.mfdb_core_load_entity(self.global_manifest, "MediaAsset")
-        for i, r in enumerate(recs):
-            if r["filename"] == filename:
-                MFDBCore.mfdb_core_remove_entity_record(self.global_manifest, "MediaAsset", i)
-                fpath = os.path.join(self.assets_dir, filename)
-                if os.path.exists(fpath): os.remove(fpath)
-                self.log_change("MediaAsset", "DELETE", filename)
-                return True
-        return False
+        res = self.media_writer.delete_media_asset(filename)
+        self.log_change("MediaAsset", "DELETE", filename)
+        return res
 
     def add_category(self, name: str, slug: str, description: str = "", feed_type: str = "blog"):
-        MFDBCore.mfdb_core_add_entity_record(self.content_manifest, "Category", [name, slug, description, feed_type])
-        self.log_change("Category", "ADD", slug)
+        res = self.category_writer.create_category(name, slug, description, feed_type)
+        self.log_change("Category", "ADD", res["category_uuid"])
+        return res
 
     def update_category(self, slug: str, name: str, description: str = None, feed_type: str = None):
-        recs = self.get_categories()
-        for i, r in enumerate(recs):
-            if r["category_slug"] == slug:
-                updates = {"category_name": name}
-                if description is not None: updates["description"] = description
-                if feed_type is not None: updates["feed_type"] = feed_type
-                MFDBCore.mfdb_core_update_entity_record_bulk(self.content_manifest, "Category", i, updates)
-                self.log_change("Category", "UPDATE", slug)
-                break
+        res = self.category_writer.update_category(slug, name, description, feed_type)
+        self.log_change("Category", "UPDATE", slug)
+        return res
 
-    def _unique_page_slug(self, base_slug: str, category_slug: str, exclude_uuid: str = None) -> str:
-        """BUGFIX (2026-08-11, audit M6): two pages with the same title in
-        the same category previously got the same slug, and _build_page
-        silently overwrote the first page's built index.html with the
-        second's (os.makedirs(..., exist_ok=True)) while both remained in
-        the DB. Appends -2, -3, ... until the slug is unique within the
-        target category. exclude_uuid lets update_page re-check a page's
-        own existing slug without colliding with itself."""
-        existing = {
-            r["slug"] for r in MFDBCore.mfdb_core_load_entity(self.content_manifest, "Page")
-            if r.get("category_fk") == category_slug and r.get("page_uuid") != exclude_uuid
-        }
-        if base_slug not in existing:
-            return base_slug
-        n = 2
-        while f"{base_slug}-{n}" in existing:
-            n += 1
-        return f"{base_slug}-{n}"
+    def delete_category(self, slug: str):
+        res = self.category_writer.delete_category(slug)
+        self.log_change("Category", "DELETE", slug)
+        return res
 
     def create_page(self, title: str, category_slug: str, page_type: str, content_data: Dict[str, Any]) -> str:
-        page_uuid = str(uuid.uuid4())
-        page_slug = self._unique_page_slug(bejson_utility_slugify(title), category_slug)
-        created_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-        MFDBCore.mfdb_core_add_entity_record(self.content_manifest, "Page", [page_uuid, title, page_slug, category_slug, content_data.get("author_fk", ""), page_type, content_data.get("featured_img"), created_at])
-        content_values = [page_uuid, content_data.get("html_body", ""), content_data.get("markdown_body", ""), content_data.get("source_files", []), content_data.get("video_url", ""), content_data.get("pdf_url", ""), content_data.get("pros", []), content_data.get("cons", []), content_data.get("verdict_score", 0.0)]
-        MFDBCore.mfdb_core_add_entity_record(self.content_manifest, "PageContent", content_values)
+        page_uuid = self.page_writer.create_page(title, category_slug, page_type, content_data)
         self.log_change("Page", "ADD", page_uuid)
         return page_uuid
 
     def update_page(self, page_uuid: str, title: str, category_slug: str, page_type: str, content_data: Dict[str, Any]):
-        recs = MFDBCore.mfdb_core_load_entity(self.content_manifest, "Page")
-        for i, r in enumerate(recs):
-            if r["page_uuid"] == page_uuid:
-                # BUGFIX (2026-08-11, audit M6): slug was never regenerated
-                # when the title (or category) changed, so a renamed page
-                # kept building at its old URL while a NEW page with the
-                # renamed title's slug would silently collide with it.
-                new_slug = self._unique_page_slug(bejson_utility_slugify(title), category_slug, exclude_uuid=page_uuid)
-                MFDBCore.mfdb_core_update_entity_record(self.content_manifest, "Page", i, "title", title)
-                MFDBCore.mfdb_core_update_entity_record(self.content_manifest, "Page", i, "slug", new_slug)
-                MFDBCore.mfdb_core_update_entity_record(self.content_manifest, "Page", i, "category_fk", category_slug)
-                MFDBCore.mfdb_core_update_entity_record(self.content_manifest, "Page", i, "page_type", page_type)
-                self.log_change("Page", "UPDATE", page_uuid)
-                break
-        crecs = MFDBCore.mfdb_core_load_entity(self.content_manifest, "PageContent")
-        for i, r in enumerate(crecs):
-            if r["page_uuid_fk"] == page_uuid:
-                for key in ["html_body", "markdown_body", "source_files", "video_url", "pdf_url", "pros", "cons", "verdict_score"]:
-                    if key in content_data: MFDBCore.mfdb_core_update_entity_record(self.content_manifest, "PageContent", i, key, content_data[key])
-                break
+        res = self.page_writer.update_page(page_uuid, title, category_slug, page_type, content_data)
+        self.log_change("Page", "UPDATE", page_uuid)
+        return res
 
     def delete_page(self, page_uuid: str):
-        # 1. Remove from Page entity
-        pages = MFDBCore.mfdb_core_load_entity(self.content_manifest, "Page")
-        for i, p in enumerate(pages):
-            if p.get("page_uuid") == page_uuid:
-                MFDBCore.mfdb_core_remove_entity_record(self.content_manifest, "Page", i)
-                break
-        
-        # 2. Remove from PageContent entity
-        contents = MFDBCore.mfdb_core_load_entity(self.content_manifest, "PageContent")
-        for i, c in enumerate(contents):
-            if c.get("page_uuid_fk") == page_uuid:
-                MFDBCore.mfdb_core_remove_entity_record(self.content_manifest, "PageContent", i)
-                break
+        res = self.page_writer.delete_page(page_uuid)
         self.log_change("Page", "DELETE", page_uuid)
-
-    def delete_category(self, slug: str):
-        # BUGFIX (2026-08-11, audit M7): deleting a category used to leave
-        # its pages with a dangling category_fk, silently dropping them
-        # from every feed - the same trap pkg19 already fixed for blank
-        # categories, just not on this path. Reassign members to
-        # "uncategorized" first (skip if the category being deleted IS
-        # uncategorized itself - that one should never be removable via
-        # this path in the first place, but guard against it regardless).
-        if slug != "uncategorized":
-            pages = MFDBCore.mfdb_core_load_entity(self.content_manifest, "Page")
-            for i, p in enumerate(pages):
-                if p.get("category_fk") == slug:
-                    MFDBCore.mfdb_core_update_entity_record(self.content_manifest, "Page", i, "category_fk", "uncategorized")
-            self.log_change("Page", "REASSIGN_ORPHANS", slug + " -> uncategorized")
-
-        recs = MFDBCore.mfdb_core_load_entity(self.content_manifest, "Category")
-        for i, r in enumerate(recs):
-            if r.get("category_slug") == slug:
-                MFDBCore.mfdb_core_remove_entity_record(self.content_manifest, "Category", i)
-                break
-        self.log_change("Category", "DELETE", slug)
+        return res
 
     def delete_ad(self, ad_uuid: str):
         recs = self.get_ads()
@@ -635,7 +554,7 @@ class MFDB_CMS_Manager:
         return MFDBCore.mfdb_core_load_entity(self.global_manifest, "VideoAsset")
 
     def get_assets(self) -> List[Dict]:
-        return MFDBCore.mfdb_core_load_entity(self.global_manifest, "MediaAsset")
+        return self.media_writer.get_all_assets()
 
     def get_asset_by_hash(self, file_hash: str) -> Optional[Dict]:
         return next((a for a in self.get_assets() if a["file_hash"] == file_hash), None)
@@ -647,26 +566,29 @@ class MFDB_CMS_Manager:
         return MFDBCore.mfdb_core_load_entity(self.content_manifest, "StandaloneApp")
 
     def get_pages(self) -> List[Dict]:
-        return MFDBCore.mfdb_core_load_entity(self.content_manifest, "Page")
+        return self.page_writer.get_all_pages()
 
     def get_categories(self) -> List[Dict]:
-        return MFDBCore.mfdb_core_load_entity(self.content_manifest, "Category")
+        return self.category_writer.get_all_categories()
 
-    def get_pages_in_category(self, category_slug: str) -> List[Dict]:
-        return [p for p in MFDBCore.mfdb_core_load_entity(self.content_manifest, "Page")
-                if p.get("category_fk") == category_slug]
+    def get_pages_in_category(self, category_identifier: str) -> List[Dict]:
+        cat = self.category_writer.get_category_by_slug(category_identifier) or self.category_writer.get_category_by_uuid(category_identifier)
+        cat_uuid = cat["category_uuid"] if cat else category_identifier
+        return [
+            p for p in self.page_writer.get_all_pages()
+            if p.get("category_fk") in (cat_uuid, category_identifier)
+        ]
 
-    def get_apps_in_category(self, category_slug: str) -> List[Dict]:
-        return [a for a in self.get_apps() if a.get("category_fk") == category_slug]
+    def get_apps_in_category(self, category_identifier: str) -> List[Dict]:
+        cat = self.category_writer.get_category_by_slug(category_identifier) or self.category_writer.get_category_by_uuid(category_identifier)
+        cat_uuid = cat["category_uuid"] if cat else category_identifier
+        return [
+            a for a in self.get_apps()
+            if a.get("category_fk") in (cat_uuid, category_identifier) or a.get("app_category_fk") in (cat_uuid, category_identifier)
+        ]
 
     def get_full_page_data(self, page_uuid: str) -> Optional[Dict]:
-        pages = MFDBCore.mfdb_core_load_entity(self.content_manifest, "Page")
-        page = next((p for p in pages if p.get("page_uuid") == page_uuid), None)
-        if not page:
-            return None
-        contents = MFDBCore.mfdb_core_load_entity(self.content_manifest, "PageContent")
-        content = next((c for c in contents if c.get("page_uuid_fk") == page_uuid), {})
-        return {**page, **content}
+        return self.page_writer.get_full_page_data(page_uuid)
 
     def create_app(self, name: str, description: str, category: str,
                    featured_img: str, entry_file: str):

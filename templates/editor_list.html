@@ -10,15 +10,21 @@
     {% set columns = ['Title', 'Category', 'Type', 'Created At'] %}
     {% set rows = [] %}
     {% for r in pages_doc.Values %}
+        {% set p_uuid = r[f_map['page_uuid']] if f_map is defined and 'page_uuid' in f_map else r[0] %}
+        {% set p_title = r[f_map['page_title']] if f_map is defined and 'page_title' in f_map else (r[4] if r|length > 8 else r[1]) %}
+        {% set p_cat_fk = r[f_map['category_fk']] if f_map is defined and 'category_fk' in f_map else (r[1] if r|length > 8 else r[3]) %}
+        {% set p_type = r[f_map['page_type']] if f_map is defined and 'page_type' in f_map else (r[6] if r|length > 8 else r[5]) %}
+        {% set p_created = r[f_map['page_created_at']] if f_map is defined and 'page_created_at' in f_map else (r[7] if r|length > 8 else r[7]) %}
+        {% set cat_display = cat_lookup.get(p_cat_fk, p_cat_fk) if cat_lookup is defined else p_cat_fk %}
         {% set actions = [
-            {'url': '/edit/' + r[0], 'label': 'Edit', 'class': 'u-text-muted'},
-            {'url': '/pages/delete/' + r[0], 'label': 'Delete', 'class': 'u-text-primary', 'method': 'POST', 'confirm': 'Delete "' + (r[1] or 'this page') + '"? This cannot be undone.'}
+            {'url': '/edit/' + p_uuid, 'label': 'Edit', 'class': 'u-text-muted'},
+            {'url': '/pages/delete/' + p_uuid, 'label': 'Delete', 'class': 'u-text-primary', 'method': 'POST', 'confirm': 'Delete "' + (p_title or 'this page') + '"? This cannot be undone.'}
         ] %}
         {% do rows.append({
-            'title': r[1],
-            'category': r[3],
-            'type': r[5],
-            'created_at': r[7],
+            'title': p_title,
+            'category': cat_display,
+            'type': p_type,
+            'created_at': p_created,
             '_actions': actions
         }) %}
     {% endfor %}

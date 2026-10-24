@@ -8,23 +8,33 @@
   ],
   "Fields": [
     {
-      "name": "platform",
+      "name": "social_uuid",
       "type": "string"
     },
     {
-      "name": "url",
+      "name": "social_platform",
       "type": "string"
     },
     {
-      "name": "icon",
+      "name": "social_url",
       "type": "string"
+    },
+    {
+      "name": "social_icon_key",
+      "type": "string"
+    },
+    {
+      "name": "social_sort_order",
+      "type": "integer"
     }
   ],
   "Values": [
     [
+      "348e7cf9-f222-465f-b340-3eb8ad321c71",
       "GitHub",
       "https://github.com/boehnenelton",
-      "github"
+      "github",
+      1
     ]
   ]
 }
