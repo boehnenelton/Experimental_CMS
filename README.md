@@ -1,81 +1,309 @@
 # Experimental CMS (ExpCMS)
 
-A Flask + MFDB (BEJSON multi-file database) content management system with
-a static-site builder. The admin app (`EXPCMS.py`) manages pages, categories,
-authors, apps, ads, navigation, and media; `EXPCMS_Builder.py` renders the
-managed content into a fully static, self-contained HTML site with no
-external CDN dependencies.
+> **Version:** 3.11.0 &nbsp;|&nbsp; **Package:** PKG32 &nbsp;|&nbsp; **Database Engine:** MFDB (BEJSON 104a) &nbsp;|&nbsp; **Runtime:** Python 3.10+  
+> **Author:** Elton Boehnen &nbsp;|&nbsp; [boehnenelton2024.pages.dev](https://boehnenelton2024.pages.dev) &nbsp;|&nbsp; [GitHub](https://github.com/boehnenelton) &nbsp;|&nbsp; `boehnenelton2024@gmail.com`
 
-## Features
+---
 
-- **Page/content editor** — title, category, author, body HTML, with an
-  embeddable widget picker (Social Links, Call-to-Action Box, YouTube Video)
-  for inserting portable, self-contained snippets into page content.
-- **HTML Import** — bulk-imports existing HTML/Word documents as pages,
-  stripping Word cruft, scripts, and AI-tool watermark footers via
-  BeautifulSoup.
-- **Category feeds** — six feed layouts (blog, news, products, masonry,
-  gallery, app) rendered from `HTML_Skeletons/Category_Feed_Skeleton.html`.
-- **Standalone App hosting** — import and serve arbitrary HTML/ZIP apps
-  under `/apps`.
-- **Media Library** — file uploads (single + bulk directory import) and
-  YouTube video assets (auto-derived thumbnails, no API key required).
-- **Static site builder** — generates a complete static site (with
-  sitemap.xml) from the MFDB content database into `Processing/www/`.
-- **Preview server**, **backup/restore** (zips the MFDB masters), and a
-  **Build & Tools** system page for triggering builds/repacks.
-- **MFDB persistence** — all structured data lives in BEJSON 104/104a
-  manifest + entity files under `Data/workspace/`, archived to
-  `Data/global_master.mfdb.zip` / `Data/content_master.mfdb.zip`.
+## Table of Contents
 
-## Installation
+- [1. Overview & Architectural Vision](#1-overview--architectural-vision)
+- [2. Comprehensive Feature Matrix](#2-comprehensive-feature-matrix)
+  - [2.1 Content Management & Editorial Suite](#21-content-management--editorial-suite)
+  - [2.2 Embeddable Widget Framework](#22-embeddable-widget-framework)
+  - [2.3 Intelligent Document & HTML Ingestion](#23-intelligent-document--html-ingestion)
+  - [2.4 Dynamic Category Feeds & Layouts](#24-dynamic-category-feeds--layouts)
+  - [2.5 Standalone Web Application Hosting](#25-standalone-web-application-hosting)
+  - [2.6 Media Library & YouTube Asset Pipeline](#26-media-library--youtube-asset-pipeline)
+  - [2.7 Static Site Generator (SSG)](#27-static-site-generator-ssg)
+  - [2.8 System Administration, Backup & Repack Engine](#28-system-administration-backup--repack-engine)
+- [3. Architecture & Data Flow](#3-architecture--data-flow)
+- [4. Directory & Subfolder Architecture](#4-directory--subfolder-architecture)
+- [5. Installation & Prerequisites](#5-installation--prerequisites)
+- [6. Quick Start & Execution](#6-quick-start--execution)
+  - [6.1 Running the Admin Dashboard](#61-running-the-admin-dashboard)
+  - [6.2 Direct Static Site Generation](#62-direct-static-site-generation)
+  - [6.3 Integrated Preview Server](#63-integrated-preview-server)
+- [7. Configuration & Environment Variables](#7-configuration--environment-variables)
+- [8. Security Hardening & Integrity Guarantees](#8-security-hardening--integrity-guarantees)
+- [9. Documentation Hierarchy](#9-documentation-hierarchy)
+- [10. Author, Credits & License](#10-author-credits--license)
+
+---
+
+## 1. Overview & Architectural Vision
+
+**Experimental CMS (ExpCMS)** is a hybrid content management ecosystem and static site compilation engine engineered around the **BEJSON 104a Multi-File Database (MFDB)** specification. It delivers the authoring convenience, relational asset management, and interactive control of a dynamic administrative dashboard alongside the speed, security, and portability of an uncompromised, zero-dependency static HTML website.
+
+Unlike traditional CMS platforms bound to external relational database servers (MySQL, PostgreSQL) or opaque binary engines (SQLite), ExpCMS persists all structured data—pages, categories, media metadata, navigation hierarchies, and site configuration—directly into clean, auditable, schema-enforced BEJSON manifests and entity records.
+
+### Core Pillars
+- **Zero-CDN Portability:** Every compiled static page and embeddable widget operates strictly self-contained, requiring zero external runtime stylesheets, script libraries, or CDN assets.
+- **Pure MFDB Persistence:** Relational entity storage leveraging atomic JSON writes with zero database server overhead, instant portability, and automated zip-based archival.
+- **Dual-Mode Operation:** Full-featured local administrative console (`EXPCMS.py`) backed by a deterministic, batch static site builder (`EXPCMS_Builder.py`) targeting `Processing/www/`.
+- **Hardened Security Baseline:** Comprehensive defense against Cross-Site Scripting (XSS), Zip-Slip archive path traversals, unsafe file ingestion, and CSRF mutations on destructive operations.
+
+---
+
+## 2. Comprehensive Feature Matrix
+
+### 2.1 Content Management & Editorial Suite
+- **Rich Page Lifecycle:** Complete CRUD management for articles, landing pages, and documentation articles with custom titles, URL slugs, author associations, and featured imagery.
+- **Slug Collision Resolution:** Automatic uniqueness verification with numeric suffix resolution (e.g., `slug`, `slug-2`) ensuring consistent routing without silent content overwrites.
+- **Specialized Content Page Types:** Tailored editor modes and rendering pipelines for:
+  - *Standard Articles / Blog Posts*
+  - *Video Players* (Native HTML5 video and responsive YouTube streaming)
+  - *PDF Document Viewers*
+  - *Source Code & Snippet Showcases*
+  - *Embedded Standalone Application Wrappers*
+- **Sibling Content Discovery:** Automatic calculation and rendering of related articles (up to 3 sibling entries sharing the same category) under a dedicated "More from `<category>`" section.
+- **Integrated Author Profiles:** Explicit entity resolution linking author UUIDs to rich bio blocks, avatars, and social links rendered within article footers.
+- **Orphan Prevention:** Defensive fallback automatically routing pages with empty category inputs to `'uncategorized'`, eliminating invisible or unreachable entity states.
+
+### 2.2 Embeddable Widget Framework
+ExpCMS features an isolated widget registry (`lib_bejson_ExpCMS_widgets.py`) adhering to a strict portability contract:
+- **Instance Scoping:** Every widget invocation receives an 8-character cryptographic instance ID (`widget-<name>-<id>`) namespacing all CSS selectors and JS execution scopes.
+- **Zero Style Bleed:** Prevents styling collision between parent site templates and embedded elements.
+- **Available Widget Catalog:**
+  - **Social Links Bar:** Responsive wrap layout featuring SVG/glyph platform badges for GitHub, X/Twitter, LinkedIn, YouTube, Instagram, Discord, Email, and generic web links.
+  - **Call-to-Action (CTA) Box:** High-conversion content card featuring title, descriptive body copy, and customizable action button with accent color highlights.
+  - **YouTube Video Embed:** Clean 16:9 aspect-ratio responsive frame utilizing intrinsic padding scaling without external JavaScript dependencies.
+- **Modal Widget Picker:** Integrated directly into the page editor textarea (`/widgets/picker`), allowing point-and-click widget generation and instant HTML insertion.
+
+### 2.3 Intelligent Document & HTML Ingestion
+- **Automated Document Cleaning:** Ingests legacy HTML files and Microsoft Word exports directly into native ExpCMS pages via BeautifulSoup.
+- **Cruft & Tracker Stripping:** Automatically purges inline `<script>` tags, `<style>` definitions, Microsoft Office formatting artifacts (`mso-*`), tracking attributes, and AI-generator watermark footers.
+- **Resilient Fallback:** Implements high-throughput regex extraction when BeautifulSoup is unavailable in constrained runtime environments.
+
+### 2.4 Dynamic Category Feeds & Layouts
+ExpCMS provides six distinct visual category layouts defined in `HTML_Skeletons/Category_Feed_Skeleton.html` and `Components/body/`:
+1. **Blog (`blog`):** Classic chronological feed featuring featured imagery, publication timestamps, and editorial excerpts.
+2. **News (`news`):** Compact, high-density editorial listing optimized for quick scanning and frequent updates.
+3. **Products (`products`):** Showcase card layout with prominent product imagery, structured specs, and conversion links.
+4. **Masonry (`masonry`):** Dynamic Pinterest-style staggered card grid balancing varied image aspect ratios.
+5. **Gallery (`gallery`):** Media-centric visual portfolio routed through optimized masonry cards.
+6. **App Hub (`app`):** Application launch directory presenting interactive tools and standalone software packages.
+
+### 2.5 Standalone Web Application Hosting
+- **Arbitrary Web App Hosting:** Upload, unpack, and host standalone single-page applications (SPAs), browser utilities, HTML5 games, and interactive models under `/apps/<uuid>/`.
+- **Zip-Slip Hardening:** All uploaded ZIP packages pass through `safe_extract_zip()` with strict boundary validation, preventing path traversal attacks.
+- **Sandboxed Iframe Integration:** Public built site wraps hosted applications in sandboxed iframes (`sandbox="allow-scripts allow-same-origin"`) with explicit 80vh responsive height bounds.
+- **Entry File Verification:** Validates designated entry points against actual archive contents before committing records to the database.
+
+### 2.6 Media Library & YouTube Asset Pipeline
+- **Multi-File & Directory Uploads:** Supports drag-and-drop batch ingestion and recursive directory uploads (`webkitdirectory`).
+- **MIME Sniffing & Sanitization:** Automatically resolves missing browser Content-Types via `mimetypes.guess_type` and sanitizes non-ASCII filenames using cryptographic hash prefixes (`asset_{hash8}{ext}`).
+- **Keyless YouTube Ingestion:** Ingests YouTube media by URL, supporting standard (`watch?v=`), shortened (`youtu.be/`), embedded (`/embed/`), and short-form (`/shorts/`) syntax.
+- **Automated Thumbnail Derivation:** Extracts the 11-character video ID and pulls high-resolution poster thumbnails directly from Google video edge caches without requiring YouTube Data API keys.
+
+### 2.7 Static Site Generator (SSG)
+- **High-Performance Compilation:** `EXPCMS_Builder.py` reads directly from the live MFDB content repository and compiles a complete, self-contained static site into `Processing/www/`.
+- **Autoescape Security:** Implements an autoescape-enforced Jinja2 compilation environment, eliminating XSS vectors across category titles, metadata, and sidebar links.
+- **Full Asset Mirroring:** Automatically deploys uploaded media assets, active hosted web apps, and shared component stylesheets directly into the build output.
+- **Automated Sitemap Generation:** Compiles a production-ready `sitemap.xml` mapping the homepage, category feeds, individual articles, and hosted app wrappers.
+
+### 2.8 System Administration, Backup & Repack Engine
+- **Workspace Repack:** Synchronizes and compacts live runtime workspaces (`Data/workspace/db_global/`, `Data/workspace/db_content/`) into compressed master archives (`Data/global_master.mfdb.zip`, `Data/content_master.mfdb.zip`).
+- **Portable Chunking Backups:** Leverages `CMS_Chunker_Wrapper` and `lib_bejson_ExpCMS_mfdb_chunker_v6.py` to produce portable single-file database backups with safe path traversal guards (`bejson_safe_join`).
+- **Deterministic Factory Reset:** Restores the entire system to a known canonical baseline using isolated write routines.
+- **CSRF-Protected Actions:** Destructive operations (database resets, repacks, entity deletions) are enforced as POST-only endpoints.
+
+---
+
+## 3. Architecture & Data Flow
+
+```mermaid
+flowchart TD
+    subgraph Authoring["Administrative Control (EXPCMS.py)"]
+        UI["Admin UI & Dashboard"] -->|Form POST / JSON| Routes["Flask App Routes (39 Routes)"]
+        Routes -->|Typed CRUD| Manager["MFDB_CMS_Manager\n(lib_bejson_ExpCMS_cms_mfdb.py)"]
+    end
+
+    subgraph Storage["BEJSON MFDB Storage Layer (Data/)"]
+        Manager -->|Atomic File I/O| ManifestGlobal["db_global/104a.mfdb.bejson"]
+        Manager -->|Atomic File I/O| ManifestContent["db_content/104a.mfdb.bejson"]
+        Manager -->|Entity Records| EntityFiles["data/*.bejson"]
+        Manager -.->|/repack Commit| MasterZips["global_master.mfdb.zip\ncontent_master.mfdb.zip"]
+    end
+
+    subgraph Compilation["Static Site Generator (EXPCMS_Builder.py)"]
+        Builder["EXPCMS_Builder.build_site()"] -->|Read Manifests & Data| Manager
+        Builder -->|Assemble Tokens| Skeletons["HTML_Skeletons/\nGlobal / Article / Category"]
+        Builder -->|Inject Cards| Components["Components/body/\nBlog / News / Product / Masonry"]
+        Builder -->|Compile HTML| Output["Processing/www/\nStatic Site Output + sitemap.xml"]
+        Builder -->|Mirror Physical Files| OutputAssets["Processing/www/assets/\nProcessing/www/apps/"]
+    end
+```
+
+---
+
+## 4. Directory & Subfolder Architecture
+
+```
+Experimental_CMS/
+├── EXPCMS.py                         # Admin Flask application & routing controller
+├── EXPCMS_Builder.py                 # Static site generator engine
+├── requirements.txt                  # Python runtime package dependencies
+├── LICENSE                           # PolyForm Noncommercial 1.0.0 license terms
+├── README.md                         # Authoritative project overview & manual
+├── .bejson_project.json              # Canonical BEJSON project identity & changelog
+│
+├── Components/                       # Static site component fragments
+│   └── body/                         # Feed card templates (Blog, News, Product, Masonry)
+├── HTML_Skeletons/                   # Core page shells (Global, Article, Category_Feed)
+│
+├── Data/                             # Permanent MFDB database storage
+│   ├── content_master.mfdb.zip       # Seed master archive for content database
+│   ├── global_master.mfdb.zip        # Seed master archive for global system database
+│   └── workspace/                    # Active live MFDB runtime workspace
+│       ├── db_content/               # Categories, pages, page content, standalone apps
+│       └── db_global/                # Ads, authors, media assets, nav links, site config
+│
+├── Lib_PY/                           # Canonical library families (sys.path loaded)
+│   ├── Core/                         # Frozen BEJSON/MFDB low-level core engine
+│   ├── HTML/                         # Shared CSS tokens, Brutal tables, HTML3 renderers
+│   └── ExpCMS/                       # ExpCMS manager, widget registry, chunker wrappers
+│
+├── templates/                        # Admin console Jinja2 templates (admin_base.html)
+│   └── components/backend/           # Reusable admin UI widgets (Data-Table, Form-Row)
+├── static/                           # Dedicated static folder for admin assets
+│
+├── docs/                             # Technical guides, architecture & policies
+│   ├── architecture.md               # Deep-dive architectural component breakdown
+│   ├── usage-guide.md                # Complete administrative route reference
+│   ├── CHANGELOG.md                  # Comprehensive version release log
+│   ├── CONTRIBUTING.md               # Guidelines for contributions
+│   └── SECURITY.md                   # Vulnerability disclosure policy
+│
+└── dev/                              # Internal developer notes & audit registries
+    ├── AGENTS.md                     # Agent coding guidelines & library contracts
+    ├── audit.md                      # Audit remediation tracking
+    ├── audit-2026-08-11.md           # Full security audit report
+    ├── cleanup-log.md                # Dead-code removal & refactoring history
+    ├── security-notes.md             # Detailed vulnerability patch records
+    └── quarantine/                   # Quarantined non-runtime artifacts
+```
+
+---
+
+## 5. Installation & Prerequisites
+
+ExpCMS requires **Python 3.10** or newer.
 
 ```bash
+# Clone or navigate to the project directory
+cd /path/to/Experimental_CMS
+
+# Install core runtime dependencies
 pip install -r requirements.txt
 ```
 
-Requires Python 3.10+.
+### Dependency Roster
+- `Flask>=3.0` — Administrative web server and routing framework.
+- `Jinja2>=3.1` — Fast, hardened template engine with autoescaping.
+- `Werkzeug>=3.0` — WSGI utility library and path security primitives.
+- `beautifulsoup4>=4.12` — Document sanitization and HTML cruft stripping.
 
-## Usage
+---
 
-Run the admin app (serves on port 5005):
+## 6. Quick Start & Execution
+
+### 6.1 Running the Admin Dashboard
+Launch the unified administrative dashboard on port `5005`:
 
 ```bash
 python3 EXPCMS.py
 ```
 
-Then open `http://127.0.0.1:5005/` for the admin dashboard.
+Open your browser to:
+```
+http://127.0.0.1:5005/
+```
 
-Build the static site directly (writes to `Processing/www/`), without going
-through the admin UI's `/build` route:
+From the dashboard, you can author pages, upload media, configure navigation, manage categories, and launch builds.
+
+### 6.2 Direct Static Site Generation
+You can execute static compilation directly from the command line without launching the web server:
 
 ```bash
 python3 EXPCMS_Builder.py
 ```
 
-The admin app's **Build & Tools** page (`/system`) exposes the same build
-step, plus **Repack** (re-archives the MFDB workspace into the two master
-`.zip` files) and **Factory Reset**.
+Compilation builds directly to `Processing/www/`, outputting:
+- `Processing/www/index.html` (Landing page)
+- `Processing/www/<category_slug>/index.html` (Category feeds)
+- `Processing/www/<category_slug>/<page_slug>/index.html` (Individual pages)
+- `Processing/www/apps/<app_uuid>/...` (Unpacked standalone applications)
+- `Processing/www/assets/...` (Media library files)
+- `Processing/www/sitemap.xml` (Full XML sitemap)
 
-## Project Structure
+### 6.3 Integrated Preview Server
+The admin panel includes an integrated background HTTP daemon to inspect generated sites before deployment.
+- **Start Preview Daemon:** Navigate to `/srv/start` or access the **Build & Tools** section.
+- **Stop Preview Daemon:** Navigate to `/srv/stop`.
+- Default preview endpoint binds to `http://127.0.0.1:8000/`.
 
-```
-EXPCMS.py                    Admin Flask app — all routes, sidebar, config
-EXPCMS_Builder.py             Static site generator (reads MFDB, writes Processing/www/)
-Lib_PY/Core/                  Canonical frozen BEJSON/MFDB core (bejson_core, mfdb_core, path_guard, validators, errors)
-Lib_PY/HTML/                  lib_bejson_HTML_*.py — shared component CSS, skeleton tokens, html3 body/table/widget renderers
-Lib_PY/ExpCMS/                lib_bejson_ExpCMS_cms_mfdb.py — MFDB_CMS_Manager, all CMS data access (pages, categories, media, etc.)
-                               lib_bejson_ExpCMS_widgets.py — embeddable widget registry (Social Links, CTA, YouTube)
-                               lib_bejson_ExpCMS_chunker_wrapper.py / lib_bejson_ExpCMS_mfdb_chunker_v6.py — archive/restore
-templates/                    Jinja2 templates for the admin app
-Components/                   Jinja2 components injected into built static pages
-HTML_Skeletons/                Global/Article/Category page skeletons for the built site
-Data/                         MFDB workspace + archived master databases (never delete)
-docs/                         Project documentation (this doc set)
-```
+---
 
-## License
+## 7. Configuration & Environment Variables
 
-This project is licensed under PolyForm Noncommercial 1.0.0 — free for
-personal, educational, research, and non-commercial use. Commercial use
-requires a separate agreement with the copyright holder. See `LICENSE`.
+ExpCMS is designed to operate out-of-the-box with secure defaults, but supports runtime tuning via environment variables:
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `EXPCMS_SECRET_KEY` | *(Random UUID4)* | Flask session signing key. **Must be defined in production** to preserve user login sessions across process restarts. |
+| `EXPCMS_HOST` | `127.0.0.1` | Network interface binding for the administrative Flask dashboard. |
+| `EXPCMS_PORT` | `5005` | TCP listening port for the administrative Flask dashboard. |
+| `EXPCMS_PREVIEW_HOST` | `127.0.0.1` | Network interface binding for the built static site preview server. |
+| `EXPCMS_PREVIEW_PORT` | `8000` | TCP listening port for the built static site preview server. |
+
+---
+
+## 8. Security Hardening & Integrity Guarantees
+
+ExpCMS has undergone rigorous security auditing (PKG25 through PKG31) to establish an enterprise-grade defensive posture:
+
+- **Loopback Enforcement:** Both the admin application and preview daemons default strictly to `127.0.0.1`, preventing inadvertent exposure over public or local network interfaces.
+- **Cross-Site Scripting (XSS) Prevention:**
+  - All builder template executions enforce strict Jinja2 autoescaping.
+  - Widget renderers explicitly sanitize dynamic parameters using `html.escape(..., quote=True)`.
+  - Ingested HTML documents are sanitized with BeautifulSoup to eliminate embedded `<script>`, tracking tags, and malicious attributes.
+- **Path Traversal & Zip-Slip Immunity:**
+  - Standalone app ZIP uploads pass through `safe_extract_zip()` to ensure extracted files remain bounded to their destination directory.
+  - Database unchunking routines leverage `bejson_safe_join()` to guard against malicious path injections in archive manifests.
+- **CSRF Defense on State Mutations:**
+  - Destructive administrative endpoints (`/factory_reset`, `/repack`, and all delete handlers) are restricted to `POST` methods, neutralizing image-tag and link-traversal CSRF vectors.
+- **Client Application Sandboxing:**
+  - Uploaded standalone apps are embedded with `sandbox="allow-scripts allow-same-origin"` on public built pages.
+
+---
+
+## 9. Documentation Hierarchy
+
+To maintain root directory hygiene, supplementary documentation is organized into dedicated subdirectories:
+
+- **Public Reference & Architecture ([`docs/`](docs/)):**
+  - [`docs/architecture.md`](docs/architecture.md) — Comprehensive technical architecture and module interactions.
+  - [`docs/usage-guide.md`](docs/usage-guide.md) — Exhaustive routing, method signature, and API table.
+  - [`docs/CHANGELOG.md`](docs/CHANGELOG.md) — Detailed historical release notes across all packages.
+  - [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md) — Contribution standards and submission guidelines.
+  - [`docs/SECURITY.md`](docs/SECURITY.md) — Responsible disclosure protocol.
+- **Internal Development & Tracking ([`dev/`](dev/)):**
+  - [`dev/AGENTS.md`](dev/AGENTS.md) — Behavioral guidelines and coding contracts for AI agent collaborators.
+  - [`dev/audit.md`](dev/audit.md) & [`dev/audit-2026-08-11.md`](dev/audit-2026-08-11.md) — Security and database audit records.
+  - [`dev/security-notes.md`](dev/security-notes.md) — Technical vulnerability remediation tracking.
+  - [`dev/cleanup-log.md`](dev/cleanup-log.md) — Historical dead code and module retirement logs.
+
+---
+
+## 10. Author, Credits & License
+
+### Author & Engineering Credit
+**Elton Boehnen**  
+- **Email:** `boehnenelton2024@gmail.com`  
+- **Portfolio:** [boehnenelton2024.pages.dev](https://boehnenelton2024.pages.dev)  
+- **GitHub:** [github.com/boehnenelton](https://github.com/boehnenelton)
+
+### Licensing
+This project is licensed under the **PolyForm Noncommercial License 1.0.0**.  
+You are free to use, modify, and distribute this software for personal, educational, research, and non-commercial purposes. Any commercial deployment or utilization requires an explicit licensing agreement with the copyright holder. See [`LICENSE`](LICENSE) for complete terms.

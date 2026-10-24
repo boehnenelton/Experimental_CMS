@@ -4,4 +4,8 @@ dist/
 __pycache__/
 *.pyc
 *.log
+*.tmp
+logs/
+log/
+backups/
 .env
