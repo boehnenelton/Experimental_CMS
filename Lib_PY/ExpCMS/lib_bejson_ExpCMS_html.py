@@ -873,7 +873,6 @@ CSS_BRUTAL = CSS_CORE_SKELETON.replace("{COMPONENT_CSS}", COMPONENT_CSS) + """
     .c-stats-bar {{ border: 1px solid var(--border); border-radius: 0; }}
 }}
 """
-HTML_SKELETON_BRUTAL = HTML_SKELETON
 
 HTML_SKELETON = """<!DOCTYPE html>
 <html lang="en">
@@ -935,6 +934,8 @@ HTML_SKELETON = """<!DOCTYPE html>
     </script>
 </body>
 </html>"""
+
+HTML_SKELETON_BRUTAL = HTML_SKELETON
 
 # ── 4. BODY COMPONENTS ───────────────────────────────────────────────────────
 # Source: lib_bejson_HTML_html3_body.py v3.0.0
